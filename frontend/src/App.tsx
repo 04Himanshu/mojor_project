@@ -1,17 +1,20 @@
-import React from 'react';
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 mb-4">
-          React + Tailwind CSS
-        </h1>
-        <p className="text-xl text-gray-300">
-          Your frontend is successfully set up and ready to go!
-        </p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          {/* Add other routes here later */}
+          <Route path="inventory" element={<div className="p-6">Inventory Page</div>} />
+          <Route path="orders" element={<div className="p-6">Orders Page</div>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
