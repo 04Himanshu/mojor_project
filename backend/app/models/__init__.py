@@ -3,5 +3,11 @@ from .user import User
 from .role import Role
 from .customer import Customer
 from .inventory import Inventory
+from .stock_movement import StockMovement
 from .order import Order
 from .order_item import OrderItem
+from .supplier import Supplier
+from .purchase_order import PurchaseOrder
+from .purchase_order_item import PurchaseOrderItem
+from .goods_receipt import GoodsReceipt
+from .goods_receipt_item import GoodsReceiptItem

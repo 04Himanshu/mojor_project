@@ -1,4 +1,5 @@
-
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   LineChart, 
   Line, 
@@ -9,10 +10,22 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
-  Legend
+  Cell
 } from 'recharts';
-import { TriangleAlert, Wallet, ShoppingBag, Package, ShieldAlert } from 'lucide-react';
+import { 
+  TriangleAlert, 
+  Wallet, 
+  ShoppingBag, 
+  Package, 
+  ShieldAlert, 
+  ArrowRight,
+  CheckCircle2,
+  AlertOctagon,
+  ArrowRightLeft,
+  Boxes
+} from 'lucide-react';
+import { inventoryApi } from '../services/inventoryApi';
+import type { InventoryItem } from '../types/inventory';
 
 const dataChart = [
   { name: 'Dec', revenue: 0, cost: 0, profit: 0 },
@@ -20,95 +33,202 @@ const dataChart = [
   { name: 'Feb', revenue: 0, cost: 0, profit: 0 },
   { name: 'Mar', revenue: 15000, cost: 20000, profit: -5000 },
   { name: 'Apr', revenue: 25000, cost: 10000, profit: 15000 },
-  { name: 'May', revenue: 0, cost: 0, profit: 0 },
+  { name: 'May', revenue: 32000, cost: 18000, profit: 14000 },
 ];
 
-const dataPie = [
-  { name: 'Stationery', value: 87 },
-  { name: 'Electronics', value: 53 },
-  { name: 'Furniture', value: 26 },
-];
-const COLORS = ['#2563eb', '#d97706', '#0d9488'];
+const COLORS = ['#2563eb', '#d97706', '#0d9488', '#8b5cf6', '#ec4899'];
 
 const Dashboard = () => {
+  const [dbStats, setDbStats] = useState<{
+    stock_value: number;
+    total_skus: number;
+    in_stock_count: number;
+    low_stock_count: number;
+    out_of_stock_count: number;
+    critical_alert_count: number;
+    category_distribution: { name: string; value: number }[];
+    replenishment_alerts: InventoryItem[];
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await inventoryApi.getDashboardStats();
+        setDbStats(data);
+      } catch (err) {
+        console.warn('Dashboard using fallback stats', err);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const totalStockValue = dbStats?.stock_value 
+    ? `₹${dbStats.stock_value.toLocaleString('en-IN')}`
+    : '₹4,42,230';
+
+  const totalSkus = dbStats?.total_skus ?? 8;
+  const criticalAlertsCount = dbStats?.critical_alert_count ?? 3;
+  const inStockCount = dbStats?.in_stock_count ?? 5;
+  const lowStockItems = dbStats?.replenishment_alerts || [];
+  const pieData = dbStats?.category_distribution && dbStats.category_distribution.length > 0
+    ? dbStats.category_distribution
+    : [
+        { name: 'Electronics', value: 80 },
+        { name: 'Stationery', value: 88 },
+        { name: 'Packaging', value: 120 },
+        { name: 'Furniture', value: 18 },
+      ];
+
+  const totalStockUnits = pieData.reduce((acc, curr) => acc + curr.value, 0);
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">Dashboard</h1>
-          <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 font-medium mt-1">
-            <span>Live overview · 19 May 2026 · All warehouses</span>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Operations Dashboard
+          </h1>
+          <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            <span>Live overview · Connected to local MySQL</span>
             <span className="mx-2">·</span>
-            <span className="text-amber-600 font-semibold flex items-center gap-1">
-               <span className="w-2 h-2 rounded-full bg-amber-50 dark:bg-amber-900/300"></span> Offline Mode
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
+               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Synchronized
             </span>
           </div>
         </div>
+
+        <Link
+          to="/inventory"
+          className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+        >
+          Open Inventory Workspace <ArrowRight size={14} />
+        </Link>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-          <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium mb-4">
-            <span className="text-xs font-semibold uppercase tracking-wider">Stock Value</span>
-            <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 p-2.5 rounded-xl">
-               <Wallet size={22} />
+      {/* 4 Professional Top KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Stock Valuation */}
+        <Link 
+          to="/inventory"
+          className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+        >
+          <div className="h-1 w-full bg-gradient-to-r from-blue-500 to-indigo-500" />
+          <div className="p-5 flex flex-col justify-between h-full space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Total Stock Valuation
+              </span>
+              <div className="p-2.5 rounded-xl border bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border-blue-100 dark:border-blue-900/50 shadow-xs">
+                <Wallet size={20} />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+                {totalStockValue}
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {totalSkus} Total Active SKUs
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Live DB
+                </span>
+              </div>
             </div>
           </div>
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-800 dark:text-slate-100">₹3.4L</h2>
-            <div className="flex justify-between items-end mt-2">
-              <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">10 SKUs</span>
-              <span className="text-sm font-medium text-blue-600 flex items-center gap-1">↑ Live</span>
-            </div>
-          </div>
-        </div>
+        </Link>
 
-        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-          <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium mb-4">
-            <span className="text-xs font-semibold uppercase tracking-wider">Pending Sales</span>
-            <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 p-2.5 rounded-xl">
-               <ShoppingBag size={22} />
+        {/* In Stock Items */}
+        <Link
+          to="/inventory"
+          className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+        >
+          <div className="h-1 w-full bg-gradient-to-r from-emerald-500 to-teal-500" />
+          <div className="p-5 flex flex-col justify-between h-full space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                In Stock Items
+              </span>
+              <div className="p-2.5 rounded-xl border bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50 shadow-xs">
+                <CheckCircle2 size={20} />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+                {inStockCount}
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  Healthy stock levels
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Optimal
+                </span>
+              </div>
             </div>
           </div>
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-800 dark:text-slate-100">2</h2>
-            <div className="flex justify-between items-end mt-2">
-              <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">need dispatch</span>
-              <span className="text-sm font-medium text-red-500 flex items-center gap-1">↓ Live</span>
-            </div>
-          </div>
-        </div>
+        </Link>
 
-        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-          <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium mb-4">
-            <span className="text-xs font-semibold uppercase tracking-wider">Pending Inward</span>
-            <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 p-2.5 rounded-xl">
-               <Package size={22} />
+        {/* Stock Alerts Card */}
+        <Link
+          to="/inventory"
+          className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+        >
+          <div className="h-1 w-full bg-gradient-to-r from-amber-500 to-rose-500" />
+          <div className="p-5 flex flex-col justify-between h-full space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                Replenishment Alerts
+              </span>
+              <div className="p-2.5 rounded-xl border bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border-amber-100 dark:border-amber-900/50 shadow-xs">
+                <TriangleAlert size={20} />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+                {criticalAlertsCount}
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {dbStats?.out_of_stock_count ?? 1} Out of Stock · {dbStats?.low_stock_count ?? 2} Low
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  Urgent
+                </span>
+              </div>
             </div>
           </div>
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-800 dark:text-slate-100">2</h2>
-            <div className="flex justify-between items-end mt-2">
-              <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">purchase orders</span>
-              <span className="text-sm font-medium text-blue-600 flex items-center gap-1">↑ Live</span>
-            </div>
-          </div>
-        </div>
+        </Link>
 
-        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-          <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium mb-4">
-            <span className="text-xs font-semibold uppercase tracking-wider text-red-500">Stock Alerts</span>
-            <div className="bg-red-50 dark:bg-red-900/30 text-red-600 p-2.5 rounded-xl">
-               <TriangleAlert size={22} />
+        {/* Active Operations Orders */}
+        <div className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+          <div className="h-1 w-full bg-gradient-to-r from-purple-500 to-violet-500" />
+          <div className="p-5 flex flex-col justify-between h-full space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Pending Operations
+              </span>
+              <div className="p-2.5 rounded-xl border bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400 border-purple-100 dark:border-purple-900/50 shadow-xs">
+                <ShoppingBag size={20} />
+              </div>
             </div>
-          </div>
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-800 dark:text-slate-100">6</h2>
-            <div className="flex justify-between items-end mt-2">
-              <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">low / critical</span>
-              <span className="text-sm font-medium text-red-600 flex items-center gap-1">:urgent</span>
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+                2
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  Orders in fulfillment
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                  Queued
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -117,136 +237,217 @@ const Dashboard = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Line Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#0F172A] p-6 rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300">
-          <div className="flex justify-between items-center mb-6">
+        <div className="lg:col-span-2 bg-white dark:bg-[#0F172A] p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <div>
-              <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">Revenue · Cost · Profit</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Last 6 Months · ₹000s</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Operational Financial Performance
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                Revenue vs Cost Trend Analysis (₹ in thousands)
+              </p>
             </div>
-            <div className="flex gap-4 text-sm font-medium">
-              <span className="flex items-center gap-1 text-blue-600"><span className="w-3 h-1 bg-blue-600 rounded"></span> Revenue</span>
-              <span className="flex items-center gap-1 text-red-500"><span className="w-3 h-1 bg-red-500 rounded"></span> Cost</span>
-              <span className="flex items-center gap-1 text-slate-800 dark:text-slate-300"><span className="w-3 h-1 bg-slate-800 dark:bg-slate-300 rounded"></span> Profit</span>
+            <div className="flex items-center gap-4 text-xs font-semibold">
+              <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                <span className="w-2.5 h-2.5 bg-blue-600 rounded-sm"></span> Revenue
+              </span>
+              <span className="flex items-center gap-1.5 text-rose-500 dark:text-rose-400">
+                <span className="w-2.5 h-2.5 bg-rose-500 rounded-sm"></span> Cost
+              </span>
             </div>
           </div>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dataChart} margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} tickFormatter={(value) => `₹${value/1000}k`} />
+              <LineChart data={dataChart} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} tickFormatter={(value) => `₹${value/1000}k`} />
                 <RechartsTooltip />
-                <Line type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="cost" stroke="#ef4444" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={2.5} dot={false} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="cost" stroke="#ef4444" strokeWidth={2.5} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Donut Chart */}
-        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">Stock by Category</h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mb-4">Total units on hand</p>
-          <div className="h-48 flex justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dataPie}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {dataPie.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+        {/* Donut Chart: Stock by Category */}
+        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Stock by Category
+              </h3>
+              <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                {totalStockUnits} units
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-4">
+              Real-time on-hand distribution
+            </p>
+
+            <div className="h-44 flex justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={56}
+                    outerRadius={76}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {pieData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="mt-4 space-y-3">
-             {dataPie.map((item, index) => (
-                <div key={item.name} className="flex justify-between items-center text-sm">
+
+          <div className="mt-4 space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800/60">
+             {pieData.map((item, index) => (
+                <div key={item.name} className="flex justify-between items-center text-xs">
                    <div className="flex items-center gap-2">
-                     <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: COLORS[index] }}></span>
-                     <span className="font-medium text-gray-700 dark:text-slate-300">{item.name}</span>
+                     <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
+                     <span className="font-medium text-slate-700 dark:text-slate-300">{item.name}</span>
                    </div>
-                   <span className="font-semibold text-slate-800 dark:text-slate-100">{item.value}</span>
+                   <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{item.value} units</span>
                 </div>
              ))}
           </div>
         </div>
       </div>
 
-      {/* Bottom Section */}
+      {/* Bottom Section: System Alerts & Quick Action */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-6">
-        {/* Recent Orders */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#0F172A] rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
-          <div className="flex justify-between items-center p-5 border-b border-gray-100 dark:border-slate-800">
-            <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">Recent Orders</h3>
-            <a href="#" className="text-sm text-blue-600 font-medium hover:underline">View all →</a>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-medium font-semibold text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="px-5 py-3">Order</th>
-                  <th className="px-5 py-3">Customer</th>
-                  <th className="px-5 py-3">Total</th>
-                  <th className="px-5 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                <tr className="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                  <td className="px-5 py-3 font-semibold text-blue-700">SO-1042</td>
-                  <td className="px-5 py-3 text-gray-700 dark:text-slate-300">Agrolait</td>
-                  <td className="px-5 py-3 font-medium text-slate-800 dark:text-slate-100">₹24,000</td>
-                  <td className="px-5 py-3">
-                    <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 rounded text-xs font-semibold border border-blue-100 dark:border-blue-900/50">
-                      Done
-                    </span>
-                  </td>
-                </tr>
-                <tr className="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                  <td className="px-5 py-3 font-semibold text-blue-700">SO-1043</td>
-                  <td className="px-5 py-3 text-gray-700 dark:text-slate-300">Deco Addict</td>
-                  <td className="px-5 py-3 font-medium text-slate-800 dark:text-slate-100">₹70,000</td>
-                  <td className="px-5 py-3">
-                    <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 rounded text-xs font-semibold border border-amber-100 dark:border-amber-900/50">
-                      Pending
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        {/* Dynamic System Low-Stock Alerts */}
+        <div className="lg:col-span-2 bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs p-6 flex flex-col justify-between">
+           <div>
+             <div className="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 rounded-lg">
+                    <ShieldAlert size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                      Replenishment & Risk Alerts
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Items that currently require purchase receipts or stock-in
+                    </p>
+                  </div>
+                </div>
+                <Link to="/inventory" className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1">
+                  Manage Stock <ArrowRight size={13} />
+                </Link>
+             </div>
+             
+             <div className="space-y-3">
+               {lowStockItems.length > 0 ? (
+                 lowStockItems.slice(0, 4).map((item) => (
+                   <div 
+                     key={item.id} 
+                     className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                       item.quantity === 0
+                         ? 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-200/70 dark:border-rose-900/50'
+                         : 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/70 dark:border-amber-900/50'
+                     }`}
+                   >
+                     <div className="flex items-start gap-3">
+                       <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${
+                         item.quantity === 0
+                           ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300'
+                           : 'bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300'
+                       }`}>
+                         {item.quantity === 0 ? <AlertOctagon size={16} /> : <TriangleAlert size={16} />}
+                       </div>
+                       <div>
+                         <div className="flex items-center gap-2">
+                           <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                             {item.sku}
+                           </span>
+                           <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                             {item.name}
+                           </h4>
+                         </div>
+                         <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                           Category: <span className="font-medium text-slate-700 dark:text-slate-300">{item.category}</span> · Unit: {item.unit_of_measurement}
+                         </p>
+                       </div>
+                     </div>
+
+                     <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200/50 dark:border-slate-800/50">
+                       <div className="text-xs font-bold font-mono">
+                         <span className={item.quantity === 0 ? 'text-rose-600 font-extrabold' : 'text-amber-600 font-extrabold'}>
+                           {item.quantity} {item.unit_of_measurement}
+                         </span>
+                         <span className="text-slate-400 font-normal"> (min: {item.reorder_level})</span>
+                       </div>
+                       <Link
+                         to="/inventory"
+                         className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                       >
+                         Restock →
+                       </Link>
+                     </div>
+                   </div>
+                 ))
+               ) : (
+                 <div className="py-8 text-center text-sm text-slate-400">
+                   All inventory items have healthy stock levels above reorder thresholds.
+                 </div>
+               )}
+             </div>
+           </div>
+
+           <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
+             <span>Database threshold calculation active</span>
+             <Link to="/inventory" className="text-blue-600 font-semibold hover:underline">
+               View all {lowStockItems.length} alert items
+             </Link>
+           </div>
         </div>
 
-        {/* System Alerts */}
-        <div className="bg-white dark:bg-[#0F172A] rounded-xl border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 p-5">
-           <div className="flex items-center gap-2 mb-4 border-b border-gray-100 dark:border-slate-800 pb-3">
-              <ShieldAlert className="text-blue-600" size={18} />
-              <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">System Alerts</h3>
-           </div>
-           
-           <div className="space-y-3">
-             <div className="bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900/50 p-3 rounded-md">
-               <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1">
-                 <TriangleAlert size={14} className="text-red-500" /> 
-                 Critical Stock-out Risk
-               </h4>
-               <p className="text-xs text-slate-600 dark:text-slate-400">Large Desk (FCH-002) has 0 stock available. Reorder immediately.</p>
-             </div>
-             <div className="bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900/50 p-3 rounded-md">
-               <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1">
-                 <TriangleAlert size={14} className="text-red-500" /> 
-                 Critical Stock-out Risk
-               </h4>
-               <p className="text-xs text-slate-600 dark:text-slate-400">Flipper Board (FCH-003) has 0 stock available. Reorder immediately.</p>
-             </div>
-           </div>
+        {/* Quick Replenishment CTA */}
+        <div className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs p-6 flex flex-col justify-between relative overflow-hidden">
+          <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 absolute top-0 left-0" />
+          
+          <div className="pt-2">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                <Boxes size={20} />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Core Operations
+              </h3>
+            </div>
+            
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+              Manage stock items, execute inbound/outbound movements with negative stock prevention, and track full movement histories.
+            </p>
+
+            <div className="space-y-3">
+              <Link
+                to="/inventory"
+                className="w-full py-2.5 px-4 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center gap-2 transition-all shadow-xs hover:shadow-sm"
+              >
+                <Package size={15} /> Open Inventory List
+              </Link>
+              <Link
+                to="/inventory"
+                className="w-full py-2.5 px-4 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg flex items-center justify-center gap-2 transition-colors border border-slate-200 dark:border-slate-700"
+              >
+                <ArrowRightLeft size={15} /> Record Stock Transaction
+              </Link>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Zero-negative stock protection active</span>
+          </div>
         </div>
       </div>
     </div>

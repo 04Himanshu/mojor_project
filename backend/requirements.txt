@@ -3,3 +3,5 @@ uvicorn
 sqlalchemy
 pydantic
 pydantic-settings
+pymysql
+cryptography
