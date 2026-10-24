@@ -46,7 +46,7 @@ export const Orders: React.FC = () => {
       setOrders(data);
     } catch (err) {
       console.error(err);
-      showNotification('Failed to load orders. Make sure backend is running.', 'error');
+      showNotification('Unable to load orders. Please check your connection.', 'error');
     } finally {
       setLoading(false);
     }
@@ -90,30 +90,30 @@ export const Orders: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-            <ShoppingCart className="text-blue-600 dark:text-blue-400" size={26} />
-            Order Management
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
+            <ShoppingCart className="text-blue-600 dark:text-blue-400" size={24} />
+            <span>Order Management</span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Sales order processing, multi-item allocation, real-time stock deduction, and tax invoices
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleRefresh}
-            className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs transition-colors flex items-center gap-1.5"
+            className="btn-secondary"
           >
-            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-            Refresh
+            <RefreshCw size={13} className={loading ? 'animate-spin text-blue-500' : ''} />
+            <span>Refresh</span>
           </button>
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+            className="btn-primary"
           >
-            <Plus size={16} />
-            Create Sales Order
+            <Plus size={15} />
+            <span>Create Sales Order</span>
           </button>
         </div>
       </div>

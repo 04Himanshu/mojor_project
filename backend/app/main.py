@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from app.core.config import settings
 from app.core.database import engine, Base, SessionLocal
 from app.routers import customers, inventory, orders, dashboard, users, procurement, auth
 import app.models  # Ensures all models are registered
@@ -27,14 +28,17 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for frontend Vite dev server & production
+# Production CORS configuration loaded from environment variables
+cors_origins = settings.get_cors_origins()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])

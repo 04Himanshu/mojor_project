@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   LineChart, 
@@ -36,9 +36,9 @@ const dataChart = [
   { name: 'May', revenue: 32000, cost: 18000, profit: 14000 },
 ];
 
-const COLORS = ['#2563eb', '#d97706', '#0d9488', '#8b5cf6', '#ec4899'];
+const COLORS = ['#2563EB', '#D97706', '#0D9488', '#8B5CF6', '#EC4899'];
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   const [dbStats, setDbStats] = useState<{
     stock_value: number;
     total_skus: number;
@@ -86,23 +86,25 @@ const Dashboard = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             Operations Dashboard
           </h1>
-          <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
-            <span>Live overview · Connected to local MySQL</span>
-            <span className="mx-2">·</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
-               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Synchronized
+          <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 font-medium mt-1 gap-2">
+            <span>Enterprise overview</span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Real-time Sync
             </span>
           </div>
         </div>
 
         <Link
           to="/inventory"
-          className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+          className="btn-primary self-start sm:self-auto"
         >
-          Open Inventory Workspace <ArrowRight size={14} />
+          <span>Open Inventory Workspace</span>
+          <ArrowRight size={14} />
         </Link>
       </div>
 
@@ -111,31 +113,28 @@ const Dashboard = () => {
         {/* Total Stock Valuation */}
         <Link 
           to="/inventory"
-          className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+          className="card-interactive p-5 flex flex-col justify-between group"
         >
-          <div className="h-1 w-full bg-gradient-to-r from-blue-500 to-indigo-500" />
-          <div className="p-5 flex flex-col justify-between h-full space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Total Stock Valuation
-              </span>
-              <div className="p-2.5 rounded-xl border bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border-blue-100 dark:border-blue-900/50 shadow-xs">
-                <Wallet size={20} />
-              </div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Total Stock Valuation
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+              <Wallet size={18} />
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
-                {totalStockValue}
-              </div>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  {totalSkus} Total Active SKUs
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800/60">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  Live DB
-                </span>
-              </div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              {totalStockValue}
+            </div>
+            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/70 text-xs">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">
+                {totalSkus} Active SKUs
+              </span>
+              <span className="badge-info text-[10px] py-0.5 px-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                Active Catalog
+              </span>
             </div>
           </div>
         </Link>
@@ -143,31 +142,28 @@ const Dashboard = () => {
         {/* In Stock Items */}
         <Link
           to="/inventory"
-          className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+          className="card-interactive p-5 flex flex-col justify-between group"
         >
-          <div className="h-1 w-full bg-gradient-to-r from-emerald-500 to-teal-500" />
-          <div className="p-5 flex flex-col justify-between h-full space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                In Stock Items
-              </span>
-              <div className="p-2.5 rounded-xl border bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50 shadow-xs">
-                <CheckCircle2 size={20} />
-              </div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              In Stock Items
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+              <CheckCircle2 size={18} />
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
-                {inStockCount}
-              </div>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  Healthy stock levels
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Optimal
-                </span>
-              </div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              {inStockCount}
+            </div>
+            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/70 text-xs">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">
+                Healthy stock levels
+              </span>
+              <span className="badge-success text-[10px] py-0.5 px-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Optimal
+              </span>
             </div>
           </div>
         </Link>
@@ -175,60 +171,54 @@ const Dashboard = () => {
         {/* Stock Alerts Card */}
         <Link
           to="/inventory"
-          className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+          className="card-interactive p-5 flex flex-col justify-between group"
         >
-          <div className="h-1 w-full bg-gradient-to-r from-amber-500 to-rose-500" />
-          <div className="p-5 flex flex-col justify-between h-full space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                Replenishment Alerts
-              </span>
-              <div className="p-2.5 rounded-xl border bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border-amber-100 dark:border-amber-900/50 shadow-xs">
-                <TriangleAlert size={20} />
-              </div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+              Replenishment Alerts
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+              <TriangleAlert size={18} />
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
-                {criticalAlertsCount}
-              </div>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  {dbStats?.out_of_stock_count ?? 1} Out of Stock · {dbStats?.low_stock_count ?? 2} Low
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800/60">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  Urgent
-                </span>
-              </div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              {criticalAlertsCount}
+            </div>
+            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/70 text-xs">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">
+                {dbStats?.out_of_stock_count ?? 1} Out · {dbStats?.low_stock_count ?? 2} Low
+              </span>
+              <span className="badge-warning text-[10px] py-0.5 px-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                Action
+              </span>
             </div>
           </div>
         </Link>
 
         {/* Active Operations Orders */}
-        <div className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
-          <div className="h-1 w-full bg-gradient-to-r from-purple-500 to-violet-500" />
-          <div className="p-5 flex flex-col justify-between h-full space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Pending Operations
-              </span>
-              <div className="p-2.5 rounded-xl border bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400 border-purple-100 dark:border-purple-900/50 shadow-xs">
-                <ShoppingBag size={20} />
-              </div>
+        <div className="card-base p-5 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Pending Operations
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center">
+              <ShoppingBag size={18} />
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
-                2
-              </div>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  Orders in fulfillment
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800/60">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                  Queued
-                </span>
-              </div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              2
+            </div>
+            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/70 text-xs">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">
+                Orders in fulfillment
+              </span>
+              <span className="badge-purple text-[10px] py-0.5 px-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                Queued
+              </span>
             </div>
           </div>
         </div>
@@ -237,10 +227,10 @@ const Dashboard = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Line Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#0F172A] p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs">
+        <div className="lg:col-span-2 card-base p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                 Operational Financial Performance
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
@@ -249,51 +239,51 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-4 text-xs font-semibold">
               <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-                <span className="w-2.5 h-2.5 bg-blue-600 rounded-sm"></span> Revenue
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span> Revenue
               </span>
               <span className="flex items-center gap-1.5 text-rose-500 dark:text-rose-400">
-                <span className="w-2.5 h-2.5 bg-rose-500 rounded-sm"></span> Cost
+                <span className="w-2 h-2 bg-rose-500 rounded-full"></span> Cost
               </span>
             </div>
           </div>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={dataChart} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} tickFormatter={(value) => `₹${value/1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.4} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} tickFormatter={(value) => `₹${value/1000}k`} />
                 <RechartsTooltip />
-                <Line type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={2.5} dot={false} activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="cost" stroke="#ef4444" strokeWidth={2.5} dot={false} />
+                <Line type="monotone" dataKey="revenue" stroke="#2563EB" strokeWidth={2.2} dot={false} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="cost" stroke="#EF4444" strokeWidth={2.2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Donut Chart: Stock by Category */}
-        <div className="bg-white dark:bg-[#0F172A] p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs flex flex-col justify-between">
+        <div className="card-base p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                 Stock by Category
               </h3>
-              <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700/60">
                 {totalStockUnits} units
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-4">
-              Real-time on-hand distribution
+              On-hand distribution across categories
             </p>
 
-            <div className="h-44 flex justify-center">
+            <div className="h-44 flex justify-center items-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={56}
-                    outerRadius={76}
+                    innerRadius={54}
+                    outerRadius={74}
                     paddingAngle={4}
                     dataKey="value"
                   >
@@ -306,16 +296,18 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="mt-4 space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-             {pieData.map((item, index) => (
-                <div key={item.name} className="flex justify-between items-center text-xs">
-                   <div className="flex items-center gap-2">
-                     <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
-                     <span className="font-medium text-slate-700 dark:text-slate-300">{item.name}</span>
-                   </div>
-                   <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{item.value} units</span>
+          <div className="mt-4 space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800/70">
+            {pieData.map((item, index) => (
+              <div key={item.name} className="flex justify-between items-center text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
+                  <span className="font-medium text-slate-700 dark:text-slate-300">{item.name}</span>
                 </div>
-             ))}
+                <span className="font-mono font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+                  {item.value} units
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -323,103 +315,101 @@ const Dashboard = () => {
       {/* Bottom Section: System Alerts & Quick Action */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-6">
         {/* Dynamic System Low-Stock Alerts */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs p-6 flex flex-col justify-between">
-           <div>
-             <div className="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 rounded-lg">
-                    <ShieldAlert size={18} />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                      Replenishment & Risk Alerts
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Items that currently require purchase receipts or stock-in
-                    </p>
-                  </div>
+        <div className="lg:col-span-2 card-base p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl flex items-center justify-center border border-rose-500/20">
+                  <ShieldAlert size={16} />
                 </div>
-                <Link to="/inventory" className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1">
-                  Manage Stock <ArrowRight size={13} />
-                </Link>
-             </div>
-             
-             <div className="space-y-3">
-               {lowStockItems.length > 0 ? (
-                 lowStockItems.slice(0, 4).map((item) => (
-                   <div 
-                     key={item.id} 
-                     className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                       item.quantity === 0
-                         ? 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-200/70 dark:border-rose-900/50'
-                         : 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/70 dark:border-amber-900/50'
-                     }`}
-                   >
-                     <div className="flex items-start gap-3">
-                       <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${
-                         item.quantity === 0
-                           ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300'
-                           : 'bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300'
-                       }`}>
-                         {item.quantity === 0 ? <AlertOctagon size={16} /> : <TriangleAlert size={16} />}
-                       </div>
-                       <div>
-                         <div className="flex items-center gap-2">
-                           <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                             {item.sku}
-                           </span>
-                           <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">
-                             {item.name}
-                           </h4>
-                         </div>
-                         <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                           Category: <span className="font-medium text-slate-700 dark:text-slate-300">{item.category}</span> · Unit: {item.unit_of_measurement}
-                         </p>
-                       </div>
-                     </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                    Replenishment & Risk Alerts
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Items that require purchase receipts or stock-in
+                  </p>
+                </div>
+              </div>
+              <Link to="/inventory" className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1">
+                Manage Stock <ArrowRight size={13} />
+              </Link>
+            </div>
+            
+            <div className="space-y-2.5">
+              {lowStockItems.length > 0 ? (
+                lowStockItems.slice(0, 4).map((item) => (
+                  <div 
+                    key={item.id} 
+                    className={`p-3.5 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                      item.quantity === 0
+                        ? 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200/80 dark:border-rose-900/40'
+                        : 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-200/80 dark:border-amber-900/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-1.5 rounded-lg shrink-0 ${
+                        item.quantity === 0
+                          ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300'
+                          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300'
+                      }`}>
+                        {item.quantity === 0 ? <AlertOctagon size={15} /> : <TriangleAlert size={15} />}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                            {item.sku}
+                          </span>
+                          <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                            {item.name}
+                          </h4>
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          Category: <span className="font-medium text-slate-700 dark:text-slate-300">{item.category}</span> · Unit: {item.unit_of_measurement}
+                        </p>
+                      </div>
+                    </div>
 
-                     <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200/50 dark:border-slate-800/50">
-                       <div className="text-xs font-bold font-mono">
-                         <span className={item.quantity === 0 ? 'text-rose-600 font-extrabold' : 'text-amber-600 font-extrabold'}>
-                           {item.quantity} {item.unit_of_measurement}
-                         </span>
-                         <span className="text-slate-400 font-normal"> (min: {item.reorder_level})</span>
-                       </div>
-                       <Link
-                         to="/inventory"
-                         className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
-                       >
-                         Restock →
-                       </Link>
-                     </div>
-                   </div>
-                 ))
-               ) : (
-                 <div className="py-8 text-center text-sm text-slate-400">
-                   All inventory items have healthy stock levels above reorder thresholds.
-                 </div>
-               )}
-             </div>
-           </div>
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200/50 dark:border-slate-800/50">
+                      <div className="text-xs font-bold font-mono">
+                        <span className={item.quantity === 0 ? 'text-rose-600 font-extrabold' : 'text-amber-600 font-extrabold'}>
+                          {item.quantity} {item.unit_of_measurement}
+                        </span>
+                        <span className="text-slate-400 font-normal"> (min: {item.reorder_level})</span>
+                      </div>
+                      <Link
+                        to="/inventory"
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        Restock →
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-8 text-center text-xs text-slate-400">
+                  All inventory items have healthy stock levels above reorder thresholds.
+                </div>
+              )}
+            </div>
+          </div>
 
-           <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
-             <span>Database threshold calculation active</span>
-             <Link to="/inventory" className="text-blue-600 font-semibold hover:underline">
-               View all {lowStockItems.length} alert items
-             </Link>
-           </div>
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex justify-between items-center text-xs text-slate-500">
+            <span>Automated threshold tracking active</span>
+            <Link to="/inventory" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+              View all {lowStockItems.length} alert items
+            </Link>
+          </div>
         </div>
 
         {/* Quick Replenishment CTA */}
-        <div className="bg-white dark:bg-[#0F172A] rounded-xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs p-6 flex flex-col justify-between relative overflow-hidden">
-          <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 absolute top-0 left-0" />
-          
-          <div className="pt-2">
+        <div className="card-base p-6 flex flex-col justify-between">
+          <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-                <Boxes size={20} />
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
+                <Boxes size={16} />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                 Core Operations
               </h3>
             </div>
@@ -428,23 +418,25 @@ const Dashboard = () => {
               Manage stock items, execute inbound/outbound movements with negative stock prevention, and track full movement histories.
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <Link
                 to="/inventory"
-                className="w-full py-2.5 px-4 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center gap-2 transition-all shadow-xs hover:shadow-sm"
+                className="btn-primary w-full py-2.5"
               >
-                <Package size={15} /> Open Inventory List
+                <Package size={15} />
+                <span>Open Inventory List</span>
               </Link>
               <Link
                 to="/inventory"
-                className="w-full py-2.5 px-4 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg flex items-center justify-center gap-2 transition-colors border border-slate-200 dark:border-slate-700"
+                className="btn-secondary w-full py-2.5"
               >
-                <ArrowRightLeft size={15} /> Record Stock Transaction
+                <ArrowRightLeft size={15} />
+                <span>Record Stock Transaction</span>
               </Link>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>Zero-negative stock protection active</span>
           </div>

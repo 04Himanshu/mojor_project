@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Supplier, PurchaseOrderCreatePayload } from '../../types/procurement';
 import type { InventoryItem } from '../../types/inventory';
 import { inventoryApi } from '../../services/inventoryApi';
-import { X, FileText, Plus, Trash2, Package } from 'lucide-react';
+import { X, FileText, Plus, Trash2, Package, AlertCircle } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -60,7 +60,7 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
         })
         .catch((err) => {
           console.error('Failed to load inventory items', err);
-          setError('Failed to load inventory items. Please check backend connection.');
+          setError('Failed to load catalog items. Please check your connection.');
         });
     }
   }, [isOpen]);
@@ -78,12 +78,21 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
     }
   }, [suppliers, preselectedSupplierId, isOpen]);
 
+  // Lock background scroll and listen for Escape key
   useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -187,17 +196,27 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-3xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div 
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div 
+        className="bg-white dark:bg-[#101726] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-3xl overflow-hidden my-auto flex flex-col modal-content-animate"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/30">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-              <FileText size={20} />
+            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+              <FileText size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Create Inbound Purchase Order (PO)
+              <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                Create Inbound Purchase Order
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Replenish warehouse inventory, negotiate unit costs, and schedule delivery
@@ -206,7 +225,7 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
             <X size={18} />
           </button>
@@ -215,42 +234,41 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-700 dark:text-rose-300">
-              {error}
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-2 text-xs font-medium text-rose-600 dark:text-rose-400">
+              <AlertCircle size={15} className="shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
           {/* Supplier & Status */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Select Vendor / Supplier <span className="text-rose-500">*</span>
               </label>
-              <div className="relative">
-                <select
-                  required
-                  value={supplierId}
-                  onChange={(e) => handleSupplierChange(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-medium"
-                >
-                  <option value="" disabled>-- Select a qualified vendor --</option>
-                  {suppliers.map((sup) => (
-                    <option key={sup.id} value={sup.id}>
-                      {sup.name} ({sup.payment_terms} • Rating: {sup.rating}★)
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <select
+                required
+                value={supplierId}
+                onChange={(e) => handleSupplierChange(Number(e.target.value))}
+                className="select-base font-medium"
+              >
+                <option value="" disabled>-- Select a qualified vendor --</option>
+                {suppliers.map((sup) => (
+                  <option key={sup.id} value={sup.id}>
+                    {sup.name} ({sup.payment_terms} • Rating: {sup.rating}★)
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Initial Status
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                className="select-base"
               >
                 <option value="Issued">Issued / Sent to Supplier</option>
                 <option value="Draft">Save as Draft</option>
@@ -261,18 +279,18 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
           {/* Delivery & Terms */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Expected Delivery Date
               </label>
               <input
                 type="date"
                 value={expectedDeliveryDate}
                 onChange={(e) => setExpectedDeliveryDate(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                className="input-base"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Payment Terms
               </label>
               <input
@@ -280,7 +298,7 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                 value={paymentTerms}
                 onChange={(e) => setPaymentTerms(e.target.value)}
                 placeholder="e.g. Net 30, Advance"
-                className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                className="input-base"
               />
             </div>
           </div>
@@ -288,14 +306,14 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
           {/* Multi-item Line Editor */}
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Package size={14} className="text-blue-500" />
                 Line Items to Purchase
               </span>
               <button
                 type="button"
                 onClick={addLineItem}
-                className="px-2.5 py-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 rounded-lg transition-colors flex items-center gap-1 border border-blue-200 dark:border-blue-800/60"
+                className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1"
               >
                 <Plus size={13} />
                 <span>Add Item</span>
@@ -310,17 +328,17 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                 return (
                   <div
                     key={index}
-                    className="p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col sm:flex-row items-center gap-3"
+                    className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 flex flex-col sm:flex-row items-center gap-3"
                   >
                     {/* Item dropdown */}
                     <div className="flex-1 w-full">
-                      <label className="block text-[10px] font-medium text-slate-500 mb-1">
+                      <label className="text-[10px] font-medium text-slate-500 mb-1 block">
                         SKU & Description
                       </label>
                       <select
                         value={line.inventory_id}
                         onChange={(e) => handleItemSelect(index, Number(e.target.value))}
-                        className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-medium"
+                        className="select-base text-xs py-1.5"
                       >
                         {inventoryList.map((item) => (
                           <option key={item.id} value={item.id}>
@@ -332,7 +350,7 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
 
                     {/* Quantity */}
                     <div className="w-full sm:w-28">
-                      <label className="block text-[10px] font-medium text-slate-500 mb-1">
+                      <label className="text-[10px] font-medium text-slate-500 mb-1 block">
                         Qty ({selectedInv?.unit_of_measurement || 'pcs'})
                       </label>
                       <input
@@ -340,14 +358,14 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                         min="1"
                         value={line.quantity_ordered}
                         onChange={(e) => handleQuantityChange(index, parseInt(e.target.value) || 1)}
-                        className="w-full px-3 py-1.5 text-xs font-mono font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                        className="input-base text-xs py-1.5 font-mono font-semibold"
                       />
                     </div>
 
                     {/* Unit Cost */}
                     <div className="w-full sm:w-32">
-                      <label className="block text-[10px] font-medium text-slate-500 mb-1">
-                        Unit Purchase Price (₹)
+                      <label className="text-[10px] font-medium text-slate-500 mb-1 block">
+                        Unit Cost (₹)
                       </label>
                       <input
                         type="number"
@@ -355,13 +373,13 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                         step="0.01"
                         value={line.unit_cost}
                         onChange={(e) => handleCostChange(index, parseFloat(e.target.value) || 0)}
-                        className="w-full px-3 py-1.5 text-xs font-mono font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                        className="input-base text-xs py-1.5 font-mono font-semibold"
                       />
                     </div>
 
                     {/* Line Total */}
                     <div className="w-full sm:w-28 text-right pr-2">
-                      <span className="block text-[10px] font-medium text-slate-500 mb-1">
+                      <span className="text-[10px] font-medium text-slate-500 mb-1 block">
                         Subtotal
                       </span>
                       <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">
@@ -374,10 +392,10 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                       type="button"
                       onClick={() => removeLineItem(index)}
                       disabled={lineItems.length <= 1}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-30 rounded-lg transition-colors"
+                      className="btn-ghost p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-30 rounded-lg"
                       title="Remove line item"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={15} />
                     </button>
                   </div>
                 );
@@ -388,7 +406,7 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
           {/* Shipping Address & Notes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Destination Warehouse / Receiving Dock
               </label>
               <input
@@ -396,11 +414,11 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                 value={shippingAddress}
                 onChange={(e) => setShippingAddress(e.target.value)}
                 placeholder="e.g. Main Central Warehouse, Dock 4"
-                className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                className="input-base"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 PO Notes / Special Instructions
               </label>
               <input
@@ -408,20 +426,20 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Include Certificate of Analysis with shipment"
-                className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                className="input-base"
               />
             </div>
           </div>
 
           {/* Financial Summary Box */}
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4 text-xs">
               <div>
-                <label className="block text-[10px] font-semibold text-slate-500 mb-1">Tax / GST Rate</label>
+                <label className="text-[10px] font-semibold text-slate-500 mb-1 block">GST Rate</label>
                 <select
                   value={taxRate}
                   onChange={(e) => setTaxRate(parseFloat(e.target.value))}
-                  className="px-2.5 py-1 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                  className="select-base text-xs py-1.5"
                 >
                   <option value={0}>0% (Tax Exempt)</option>
                   <option value={0.05}>5% GST</option>
@@ -431,44 +449,51 @@ export const CreatePurchaseOrderModal: React.FC<Props> = ({
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] font-semibold text-slate-500 mb-1">Freight / Shipping (₹)</label>
+                <label className="text-[10px] font-semibold text-slate-500 mb-1 block">Freight / Shipping (₹)</label>
                 <input
                   type="number"
                   min="0"
                   value={shippingCost}
                   onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
-                  className="w-24 px-2.5 py-1 text-xs font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                  className="input-base text-xs py-1.5 font-mono w-28"
                 />
               </div>
             </div>
 
             <div className="text-right space-y-0.5">
               <div className="text-xs text-slate-500">
-                Subtotal: <span className="font-mono font-medium">₹{subtotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-                {' '}+ Tax: <span className="font-mono font-medium">₹{taxAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                Subtotal: <span className="font-mono font-medium text-slate-800 dark:text-slate-200">₹{subtotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                {' '}+ Tax: <span className="font-mono font-medium text-slate-800 dark:text-slate-200">₹{taxAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
               </div>
-              <div className="text-lg font-mono font-extrabold text-blue-600 dark:text-blue-400">
+              <div className="text-base font-mono font-bold text-blue-600 dark:text-blue-400">
                 Total: ₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
               </div>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-end gap-2.5">
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+              className="btn-secondary text-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              className="btn-primary text-xs py-2 px-4 flex items-center gap-1.5 disabled:opacity-50"
             >
-              {loading ? 'Creating Order...' : 'Generate Purchase Order'}
+              {loading ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Creating Order...</span>
+                </>
+              ) : (
+                <span>Generate Purchase Order</span>
+              )}
             </button>
           </div>
         </form>

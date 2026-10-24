@@ -242,37 +242,42 @@ export const CreateOrderModal: React.FC<Props> = ({
     <div 
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 dark:bg-black/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50 ring-1 ring-black/5 dark:ring-white/10 flex flex-col modal-content-animate my-auto"
+        className="bg-white dark:bg-[#101726] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/40 flex flex-col modal-content-animate my-auto custom-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header matching ItemModal */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              Create Sales Order
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Add multiple items with live stock verification and auto tax calculation
-            </p>
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 sticky top-0 bg-white/95 dark:bg-[#101726]/95 backdrop-blur-sm z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
+              <ShoppingCart size={18} />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                Create Sales Order
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Multi-item sales order with stock verification and automated tax invoicing
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mx-6 mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
-            <AlertCircle size={16} className="shrink-0" />
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs">
+            <AlertCircle size={15} className="shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -280,10 +285,10 @@ export const CreateOrderModal: React.FC<Props> = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 flex-1 overflow-y-auto">
           {/* Customer Selection Card */}
-          <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3.5">
+          <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Building2 size={14} className="text-blue-500" />
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Building2 size={13} className="text-blue-500" />
                 Customer & Delivery Information
               </span>
               <button
@@ -298,7 +303,7 @@ export const CreateOrderModal: React.FC<Props> = ({
                     setShippingAddress('');
                   }
                 }}
-                className="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                className="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline cursor-pointer"
               >
                 {isWalkIn ? '← Select Registered Customer' : '+ New / Walk-in Customer'}
               </button>
@@ -306,14 +311,14 @@ export const CreateOrderModal: React.FC<Props> = ({
 
             {!isWalkIn ? (
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Registered Customer <span className="text-red-500">*</span>
+                <label className="form-label">
+                  Registered Customer <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={selectedCustomerId}
                   onChange={(e) => handleCustomerSelect(Number(e.target.value))}
                   required
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  className="select-base"
                 >
                   <option value="">-- Choose a Customer --</option>
                   {customers.map((c) => (
@@ -326,8 +331,8 @@ export const CreateOrderModal: React.FC<Props> = ({
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Customer Name <span className="text-red-500">*</span>
+                  <label className="form-label">
+                    Customer Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -335,11 +340,11 @@ export const CreateOrderModal: React.FC<Props> = ({
                     onChange={(e) => setCustomerName(e.target.value)}
                     required
                     placeholder="Acme Inc. / John Doe"
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="input-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     Email Address
                   </label>
                   <input
@@ -347,11 +352,11 @@ export const CreateOrderModal: React.FC<Props> = ({
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     placeholder="billing@example.com"
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="input-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     Phone Number
                   </label>
                   <input
@@ -359,14 +364,14 @@ export const CreateOrderModal: React.FC<Props> = ({
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="+91-9876543210"
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="input-base font-mono"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Shipping / Delivery Address
               </label>
               <input
@@ -374,7 +379,7 @@ export const CreateOrderModal: React.FC<Props> = ({
                 value={shippingAddress}
                 onChange={(e) => setShippingAddress(e.target.value)}
                 placeholder="Suite 500, Industrial Area, Sector 62..."
-                className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="input-base"
               />
             </div>
           </div>
@@ -382,17 +387,17 @@ export const CreateOrderModal: React.FC<Props> = ({
           {/* Line Items Card */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                <ShoppingCart size={14} className="text-blue-500" />
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <ShoppingCart size={13} className="text-blue-500" />
                 Line Items
               </span>
               <button
                 type="button"
                 onClick={handleAddRow}
-                className="px-3 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 rounded-lg border border-blue-200 dark:border-blue-900/60 transition-colors flex items-center gap-1"
+                className="btn-secondary px-3 py-1 text-xs"
               >
-                <Plus size={14} />
-                Add Another Item
+                <Plus size={13} />
+                <span>Add Item</span>
               </button>
             </div>
 
@@ -405,19 +410,19 @@ export const CreateOrderModal: React.FC<Props> = ({
                   <div
                     key={idx}
                     className={`p-3.5 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center ${
-                      isOverStock ? 'bg-rose-50/50 dark:bg-rose-950/20' : 'bg-white dark:bg-slate-900'
+                      isOverStock ? 'bg-rose-50/40 dark:bg-rose-950/20' : 'bg-white dark:bg-[#101726]'
                     }`}
                   >
                     {/* Item Selector */}
                     <div className="sm:col-span-5">
-                      <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                      <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">
                         Select Product
                       </label>
                       <select
                         value={row.inventory_id}
                         onChange={(e) => handleItemSelect(idx, Number(e.target.value))}
                         required
-                        className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                        className="select-base"
                       >
                         <option value={0}>-- Select Product --</option>
                         {inventoryList.map((inv) => (
@@ -430,8 +435,8 @@ export const CreateOrderModal: React.FC<Props> = ({
 
                     {/* Quantity */}
                     <div className="sm:col-span-2">
-                      <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                        Quantity ({row.unit_of_measurement})
+                      <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">
+                        Qty ({row.unit_of_measurement})
                       </label>
                       <input
                         type="number"
@@ -440,26 +445,26 @@ export const CreateOrderModal: React.FC<Props> = ({
                         onChange={(e) => handleQuantityChange(idx, Number(e.target.value))}
                         disabled={row.inventory_id === 0}
                         required
-                        className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                        className="input-base font-mono"
                       />
                     </div>
 
                     {/* Unit Price */}
                     <div className="sm:col-span-2">
-                      <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                      <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">
                         Price
                       </label>
-                      <div className="px-3 py-2 text-xs bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-700 dark:text-slate-300 font-semibold font-mono">
+                      <div className="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl text-slate-700 dark:text-slate-300 font-semibold font-mono border border-slate-200/60 dark:border-slate-700">
                         ₹{row.unit_price.toLocaleString('en-IN')}
                       </div>
                     </div>
 
                     {/* Line Total */}
                     <div className="sm:col-span-2 text-right">
-                      <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                      <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">
                         Subtotal
                       </label>
-                      <div className="font-bold text-xs text-slate-900 dark:text-slate-100 font-mono pt-1">
+                      <div className="font-bold text-xs text-slate-900 dark:text-slate-100 font-mono pt-1 tabular-nums">
                         ₹{lineSubtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </div>
                     </div>
@@ -470,9 +475,9 @@ export const CreateOrderModal: React.FC<Props> = ({
                         type="button"
                         onClick={() => handleRemoveRow(idx)}
                         disabled={itemRows.length <= 1}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-30 disabled:hover:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-30 disabled:hover:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
 
@@ -493,21 +498,21 @@ export const CreateOrderModal: React.FC<Props> = ({
           {/* Payment & Financial Summary Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Payment Details */}
-            <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                <ReceiptText size={14} className="text-blue-500" />
+            <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <ReceiptText size={13} className="text-blue-500" />
                 Payment & Notes
               </span>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     Payment Status
                   </label>
                   <select
                     value={paymentStatus}
                     onChange={(e) => setPaymentStatus(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200"
+                    className="select-base"
                   >
                     <option value="Unpaid">Unpaid</option>
                     <option value="Paid">Paid in Full</option>
@@ -516,13 +521,13 @@ export const CreateOrderModal: React.FC<Props> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     Payment Mode
                   </label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200"
+                    className="select-base"
                   >
                     <option value="Cash">Cash</option>
                     <option value="Card">Card / POS</option>
@@ -534,7 +539,7 @@ export const CreateOrderModal: React.FC<Props> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="form-label">
                   Order Notes / Dispatch Instructions
                 </label>
                 <textarea
@@ -542,22 +547,22 @@ export const CreateOrderModal: React.FC<Props> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Optional delivery instructions or PO reference..."
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 placeholder-slate-400"
+                  className="input-base py-2.5 resize-none"
                 />
               </div>
             </div>
 
             {/* Calculations Card */}
-            <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Percent size={14} className="text-emerald-500" />
+            <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Percent size={13} className="text-emerald-500" />
                 Valuation Summary
               </span>
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>Subtotal:</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono">
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono tabular-nums">
                     ₹{subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -567,7 +572,7 @@ export const CreateOrderModal: React.FC<Props> = ({
                   <select
                     value={taxRate}
                     onChange={(e) => setTaxRate(Number(e.target.value))}
-                    className="px-2 py-1 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200"
+                    className="select-base w-36 py-1"
                   >
                     <option value={0}>0% (Zero Tax)</option>
                     <option value={0.05}>5% GST</option>
@@ -579,7 +584,7 @@ export const CreateOrderModal: React.FC<Props> = ({
 
                 <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>Tax Amount:</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono">
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono tabular-nums">
                     +₹{taxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -591,13 +596,13 @@ export const CreateOrderModal: React.FC<Props> = ({
                     min="0"
                     value={discountAmount}
                     onChange={(e) => setDiscountAmount(Number(e.target.value))}
-                    className="w-24 px-2 py-1 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right text-slate-800 dark:text-slate-200 font-mono"
+                    className="input-base w-24 py-1 text-right font-mono"
                   />
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-sm font-bold text-slate-900 dark:text-slate-100">
+                <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80 flex justify-between items-center text-xs font-bold text-slate-900 dark:text-slate-100">
                   <span>Grand Total:</span>
-                  <span className="text-blue-600 dark:text-blue-400 text-base font-mono font-bold">
+                  <span className="text-blue-600 dark:text-blue-400 text-sm font-mono font-bold tabular-nums">
                     ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -605,20 +610,20 @@ export const CreateOrderModal: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Footer matching ItemModal */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          {/* Footer */}
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              className="btn-secondary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || hasInsufficientStock}
-              className="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+              className="btn-primary"
             >
               {submitting ? (
                 <>

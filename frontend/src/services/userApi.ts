@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
 import type {
   User,
   UserCreatePayload,
@@ -10,12 +10,6 @@ import type {
   PermissionsCatalog
 } from '../types/user';
 
-const apiClient = axios.create({
-  baseURL: '/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 export const userApi = {
   // Stats

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { Role, PermissionsCatalog, RoleCreatePayload, RoleUpdatePayload } from '../../types/user';
 import { ROLE_COLORS } from '../../types/user';
 import { 
@@ -52,6 +53,23 @@ export const CreateRoleModal: React.FC<Props> = ({
     }
   }, [roleToEdit, isOpen]);
 
+  // Lock background scroll and listen for Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const allPerms = permissionsCatalog?.all_permissions || [];
@@ -69,10 +87,8 @@ export const CreateRoleModal: React.FC<Props> = ({
     const hasAll = modulePermCodes.every((c) => selectedPermissions.includes(c));
 
     if (hasAll) {
-      // Remove all in module
       setSelectedPermissions((prev) => prev.filter((c) => !modulePermCodes.includes(c)));
     } else {
-      // Add missing in module
       setSelectedPermissions((prev) => Array.from(new Set([...prev, ...modulePermCodes])));
     }
   };
@@ -122,47 +138,54 @@ export const CreateRoleModal: React.FC<Props> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+  return createPortal(
+    <div 
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div 
-        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-white dark:bg-[#101726] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-2xl overflow-hidden my-auto flex flex-col modal-content-animate max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 sm:p-6 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50">
-              <ShieldCheck size={20} />
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/30">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+              <ShieldCheck size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                   {isEditing ? `Configure Role: ${roleToEdit.name}` : 'Create Custom Role'}
                 </h2>
                 {isSystemRole && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  <span className="badge-neutral text-[10px]">
                     <Lock size={10} /> SYSTEM ROLE
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Define access scope and granular permissions across system modules
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2 text-rose-700 dark:text-rose-300 text-xs">
-              <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-2 text-rose-600 dark:text-rose-400 text-xs">
+              <AlertCircle size={15} className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
@@ -170,7 +193,7 @@ export const CreateRoleModal: React.FC<Props> = ({
           {/* Role Name & Color */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="form-label">
                 Role Name <span className="text-rose-500">*</span>
               </label>
               <input
@@ -180,7 +203,7 @@ export const CreateRoleModal: React.FC<Props> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Regional Quality Inspector"
-                className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-200 disabled:opacity-60"
+                className="input-base disabled:opacity-60"
               />
               {isSystemRole && (
                 <p className="text-[10px] text-slate-400 mt-1">Built-in system role names cannot be renamed.</p>
@@ -188,14 +211,14 @@ export const CreateRoleModal: React.FC<Props> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
+              <label className="form-label flex items-center gap-1">
                 <Palette size={12} />
                 Badge Color
               </label>
               <select
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-200 font-medium"
+                className="select-base font-medium"
               >
                 {Object.keys(ROLE_COLORS).map((cKey) => (
                   <option key={cKey} value={cKey}>
@@ -208,7 +231,7 @@ export const CreateRoleModal: React.FC<Props> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="form-label">
               Role Purpose & Scope
             </label>
             <textarea
@@ -216,7 +239,7 @@ export const CreateRoleModal: React.FC<Props> = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the operational responsibilities and operational authority..."
-              className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-200 resize-none"
+              className="input-base resize-none"
             />
           </div>
 
@@ -224,7 +247,7 @@ export const CreateRoleModal: React.FC<Props> = ({
           <div>
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <label className="block text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                <label className="form-label uppercase tracking-wider mb-0 text-slate-900 dark:text-white">
                   Permission Matrix ({selectedPermissions.length} / {allPerms.length} Selected)
                 </label>
                 <p className="text-[11px] text-slate-400">
@@ -251,12 +274,12 @@ export const CreateRoleModal: React.FC<Props> = ({
                 return (
                   <div
                     key={moduleName}
-                    className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/80 dark:border-slate-800"
+                    className="p-3.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-200 dark:border-slate-800"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Shield size={14} className="text-blue-500" />
-                        <span className="font-bold text-xs text-slate-800 dark:text-slate-200">
+                        <span className="font-semibold text-xs text-slate-800 dark:text-slate-200">
                           {moduleName}
                         </span>
                         <span className="text-[10px] text-slate-400 font-mono">
@@ -267,7 +290,7 @@ export const CreateRoleModal: React.FC<Props> = ({
                       <button
                         type="button"
                         onClick={() => toggleModulePermissions(moduleName)}
-                        className="text-[11px] font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1"
+                        className="text-[11px] font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer"
                       >
                         {isAllInModule ? (
                           <>
@@ -296,8 +319,8 @@ export const CreateRoleModal: React.FC<Props> = ({
                             key={p.code}
                             className={`flex items-start gap-2.5 p-2 rounded-lg border cursor-pointer select-none transition-all ${
                               checked
-                                ? 'bg-white dark:bg-slate-700/80 border-blue-200 dark:border-blue-800 shadow-2xs'
-                                : 'bg-transparent border-transparent hover:bg-white/50 dark:hover:bg-slate-800/60'
+                                ? 'bg-white dark:bg-slate-800 border-blue-500/30 dark:border-blue-500/40 shadow-sm'
+                                : 'bg-transparent border-transparent hover:bg-white/50 dark:hover:bg-slate-800/40'
                             }`}
                           >
                             <input
@@ -325,26 +348,27 @@ export const CreateRoleModal: React.FC<Props> = ({
           </div>
 
           {/* Footer Submit */}
-          <div className="pt-4 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-end gap-2.5">
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+              className="btn-secondary text-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs shadow-blue-500/20 transition-all disabled:opacity-50"
+              className="btn-primary text-xs py-2 px-4 flex items-center gap-1.5 disabled:opacity-50"
             >
               {submitting && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-              {isEditing ? 'Save Policy Changes' : 'Create Role'}
+              <span>{isEditing ? 'Save Policy Changes' : 'Create Role'}</span>
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

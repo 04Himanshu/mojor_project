@@ -1,3 +1,4 @@
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -10,31 +11,44 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const { user, logout } = useAuth();
   const { toast } = useToast();
 
   const operationsLinks = [
-    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={18} /> },
-    { name: 'Inventory', path: '/inventory', icon: <PackageSearch size={18} /> },
-    { name: 'Orders', path: '/orders', icon: <ShoppingCart size={18} /> },
-    { name: 'Vendors', path: '/vendors', icon: <Building2 size={18} /> },
-    { name: 'Users & Roles', path: '/users', icon: <ShieldCheck size={18} /> },
+    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={17} /> },
+    { name: 'Inventory', path: '/inventory', icon: <PackageSearch size={17} /> },
+    { name: 'Orders', path: '/orders', icon: <ShoppingCart size={17} /> },
+    { name: 'Vendors', path: '/vendors', icon: <Building2 size={17} /> },
+    { name: 'Users & Roles', path: '/users', icon: <ShieldCheck size={17} /> },
   ];
 
-  const NavItem = ({ item }: { item: any }) => (
+  const NavItem = ({ item }: { item: typeof operationsLinks[0] }) => (
     <NavLink
       to={item.path}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
+        `flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold rounded-xl transition-all duration-150 group select-none ${
           isActive
-            ? 'bg-blue-600 text-white rounded-xl'
-            : 'text-slate-400 hover:bg-slate-800/80 hover:text-white rounded-xl'
+            ? 'bg-blue-600/15 text-blue-400 border border-blue-500/25 shadow-sm shadow-blue-500/10'
+            : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 border border-transparent'
         }`
       }
     >
-      {item.icon}
-      {item.name}
+      {({ isActive }) => (
+        <>
+          <span
+            className={`transition-colors duration-150 ${
+              isActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'
+            }`}
+          >
+            {item.icon}
+          </span>
+          <span className="flex-1 tracking-tight">{item.name}</span>
+          {isActive && (
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500 animate-pulse" />
+          )}
+        </>
+      )}
     </NavLink>
   );
 
@@ -65,27 +79,34 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-[#0B1727] flex flex-col h-full border-r border-slate-800 overflow-y-auto custom-scrollbar select-none">
-      {/* Logo Area */}
-      <div className="h-[64px] box-border shrink-0 flex items-center gap-2.5 px-6 border-b border-slate-800 sticky top-0 bg-[#0B1727] z-10">
-        <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 p-2 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
-          <PackageSearch size={18} className="text-white" />
-        </div>
-        <div>
-          <span className="text-white font-bold text-base tracking-wide block leading-tight">
-            EOM
-          </span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">
-            Operations
-          </span>
+    <aside className="w-64 bg-[#0B1220] dark:bg-[#070C18] flex flex-col h-full border-r border-slate-800/80 overflow-y-auto select-none shrink-0 custom-scrollbar z-20">
+      {/* Brand Header */}
+      <div className="h-[64px] box-border shrink-0 flex items-center justify-between px-5 border-b border-slate-800/80 sticky top-0 bg-[#0B1220]/95 dark:bg-[#070C18]/95 backdrop-blur-md z-10">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm shadow-blue-500/25 ring-1 ring-white/10">
+            <PackageSearch size={18} className="text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-white font-bold text-sm tracking-tight leading-none font-sans">
+                EOM
+              </span>
+              <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-400 rounded-md border border-blue-500/20 leading-none">
+                Enterprise
+              </span>
+            </div>
+            <span className="text-[10px] text-slate-400 font-medium tracking-wide block mt-1">
+              Operations Manager
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 px-3 py-4 space-y-6">
-        {/* Operations Section */}
+      {/* Navigation Links */}
+      <div className="flex-1 px-3 py-5 space-y-6">
         <div>
-          <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-            Operations
+          <p className="px-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+            Operations & Log
           </p>
           <div className="space-y-1">
             {operationsLinks.map((link) => (
@@ -95,22 +116,22 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Dynamic User Profile & Logout */}
-      <div className="mt-auto p-3.5 border-t border-slate-800 bg-[#08111C] sticky bottom-0 z-10">
-        <div className="flex items-center justify-between gap-2 bg-slate-900/60 border border-slate-800/80 p-2 rounded-xl">
+      {/* User Profile Card & Sign Out */}
+      <div className="p-3 border-t border-slate-800/80 bg-[#080E1A] dark:bg-[#050811] sticky bottom-0 z-10">
+        <div className="flex items-center justify-between gap-2.5 bg-slate-900/70 border border-slate-800/90 p-2.5 rounded-xl hover:border-slate-700/80 transition-colors">
           <div className="flex items-center gap-2.5 min-w-0">
             <div
               className={`w-8 h-8 rounded-lg ${getAvatarBg(
                 user?.avatar_color
-              )} flex items-center justify-center font-bold text-xs shrink-0 shadow-xs`}
+              )} flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-1 ring-white/10`}
             >
               {initial}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">
+              <p className="text-xs font-bold text-white truncate leading-tight">
                 {user?.name || 'Staff User'}
               </p>
-              <p className="text-[10px] font-medium text-slate-400 truncate">
+              <p className="text-[10px] font-medium text-slate-400 truncate leading-tight mt-0.5">
                 {user?.role_name || 'Staff'}
               </p>
             </div>
@@ -118,7 +139,7 @@ const Sidebar = () => {
 
           <button
             onClick={handleLogout}
-            title="Log Out"
+            title="Sign Out"
             className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer shrink-0"
           >
             <LogOut size={15} />

@@ -216,77 +216,88 @@ export const StockTransactionModal: React.FC<Props> = ({
     <div 
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 dark:bg-black/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl shadow-black/50 ring-1 ring-black/5 dark:ring-white/10 flex flex-col modal-content-animate my-auto"
+        className="bg-white dark:bg-[#101726] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl shadow-black/40 flex flex-col modal-content-animate my-auto custom-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              Stock Movement Transaction
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Record inventory changes with automatic movement tracking
-            </p>
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 sticky top-0 bg-white/95 dark:bg-[#101726]/95 backdrop-blur-sm z-10">
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${
+              activeTab === 'STOCK_IN' 
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+                : activeTab === 'STOCK_OUT'
+                ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+            }`}>
+              {activeTab === 'STOCK_IN' ? <ArrowDownRight size={18} /> : activeTab === 'STOCK_OUT' ? <ArrowUpRight size={18} /> : <SlidersHorizontal size={18} />}
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                Stock Movement
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Log inbound, outbound or physical adjustment transactions
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Tab Selection */}
-        <div className="grid grid-cols-3 gap-1 p-2 bg-slate-100 dark:bg-slate-800/60 mx-6 mt-4 rounded-xl">
+        <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-100/80 dark:bg-slate-900/60 mx-6 mt-4 rounded-xl border border-slate-200/60 dark:border-slate-800">
           <button
             type="button"
             onClick={() => setActiveTab('STOCK_IN')}
-            className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer ${
               activeTab === 'STOCK_IN'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/80 dark:border-slate-700 font-bold'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
-            <ArrowDownRight size={15} />
+            <ArrowDownRight size={14} />
             Stock In
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('STOCK_OUT')}
-            className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer ${
               activeTab === 'STOCK_OUT'
-                ? 'bg-rose-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                ? 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-sm border border-slate-200/80 dark:border-slate-700 font-bold'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
-            <ArrowUpRight size={15} />
+            <ArrowUpRight size={14} />
             Stock Out
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('ADJUSTMENT')}
-            className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer ${
               activeTab === 'ADJUSTMENT'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/80 dark:border-slate-700 font-bold'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
-            <SlidersHorizontal size={15} />
+            <SlidersHorizontal size={14} />
             Adjustment
           </button>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mx-6 mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 flex items-start gap-2 text-red-600 dark:text-red-400 text-xs">
-            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2 text-rose-600 dark:text-rose-400 text-xs">
+            <AlertCircle size={15} className="shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
@@ -294,14 +305,14 @@ export const StockTransactionModal: React.FC<Props> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4 flex-1">
           {/* Target Item Selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="form-label">
               Select Item
             </label>
             {allItems.length > 0 && !initialItem ? (
               <select
                 value={selectedItemId}
                 onChange={(e) => setSelectedItemId(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="select-base"
               >
                 {allItems.map((i) => (
                   <option key={i.id} value={i.id}>
@@ -310,25 +321,25 @@ export const StockTransactionModal: React.FC<Props> = ({
                 ))}
               </select>
             ) : currentItem ? (
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl flex justify-between items-center">
+              <div className="p-3 bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 rounded-xl flex justify-between items-center">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded font-semibold">
+                    <span className="font-mono text-[11px] px-2 py-0.5 bg-blue-50/60 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/40 rounded-md font-bold">
                       {currentItem.sku}
                     </span>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                       {currentItem.name}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-[11px] text-slate-500 mt-1">
                     Category: {currentItem.category} · Unit: {currentItem.unit_of_measurement}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">
                     Current Stock
                   </span>
-                  <span className="text-lg font-bold font-mono text-slate-900 dark:text-slate-100">
+                  <span className="text-base font-bold font-mono text-slate-900 dark:text-slate-100 tabular-nums">
                     {currentItem.quantity}
                   </span>
                 </div>
@@ -338,14 +349,14 @@ export const StockTransactionModal: React.FC<Props> = ({
 
           {/* Quantities & Preview calculation */}
           {activeTab === 'ADJUSTMENT' ? (
-            <div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/50 space-y-3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-blue-900 dark:text-blue-300">
+            <div className="p-4 rounded-xl bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/70 dark:border-blue-900/40 space-y-3">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-blue-900 dark:text-blue-300">
                 Physical Inventory Count
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <span className="text-[11px] text-slate-500 block mb-1">System Count</span>
-                  <div className="px-3 py-2 text-sm font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 font-mono">
+                  <div className="px-3 py-2 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-700 dark:text-slate-300 font-mono">
                     {currentStock} {currentItem?.unit_of_measurement}
                   </div>
                 </div>
@@ -358,7 +369,7 @@ export const StockTransactionModal: React.FC<Props> = ({
                     min="0"
                     value={newQuantity}
                     onChange={(e) => setNewQuantity(parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-blue-400 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input-base font-mono font-bold"
                     required
                   />
                 </div>
@@ -371,40 +382,40 @@ export const StockTransactionModal: React.FC<Props> = ({
               </div>
             </div>
           ) : (
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     {activeTab === 'STOCK_IN' ? 'Quantity to Add' : 'Quantity to Remove'}{' '}
-                    <span className="text-red-500">*</span>
+                    <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
                     min="1"
                     value={quantity}
                     onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                    className={`w-full px-3 py-2 text-sm rounded-lg border ${
+                    className={`input-base font-mono font-bold ${
                       isStockOutExceeded
-                        ? 'border-red-500 ring-2 ring-red-400/30'
-                        : 'border-slate-300 dark:border-slate-700'
-                    } bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                        ? 'border-rose-500 ring-2 ring-rose-400/30'
+                        : ''
+                    }`}
                     required
                   />
                   {isStockOutExceeded && (
-                    <p className="text-[11px] text-red-500 mt-1 font-semibold">
+                    <p className="text-[11px] text-rose-500 mt-1 font-semibold">
                       Exceeds available stock ({currentStock})!
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <span className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                  <span className="form-label text-slate-500">
                     Resulting Stock
                   </span>
-                  <div className="px-3 py-2 text-sm font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 font-mono">
+                  <div className="px-3.5 py-2 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-slate-100 font-mono">
                     {resultingStock()} {currentItem?.unit_of_measurement}
                   </div>
-                  <span className="text-[11px] text-slate-400 mt-1 block">
+                  <span className="text-[10px] text-slate-400 mt-1 block">
                     {activeTab === 'STOCK_IN' ? `+${quantity} will be added` : `-${quantity} will be deducted`}
                   </span>
                 </div>
@@ -414,13 +425,13 @@ export const StockTransactionModal: React.FC<Props> = ({
 
           {/* Reason Selection */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Reason for Movement <span className="text-red-500">*</span>
+            <label className="form-label">
+              Reason for Movement <span className="text-rose-500">*</span>
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="select-base"
             >
               {reasonsList.map((r) => (
                 <option key={r} value={r}>
@@ -435,7 +446,7 @@ export const StockTransactionModal: React.FC<Props> = ({
                 placeholder="Enter specific custom reason..."
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
-                className="mt-2 w-full px-3 py-2 text-sm rounded-lg border border-blue-400 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-base mt-2 border-blue-400"
                 required
               />
             )}
@@ -444,7 +455,7 @@ export const StockTransactionModal: React.FC<Props> = ({
           {/* Reference Order & User */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Reference Order / PO / SO (Optional)
               </label>
               <input
@@ -452,12 +463,12 @@ export const StockTransactionModal: React.FC<Props> = ({
                 value={referenceOrder}
                 onChange={(e) => setReferenceOrder(e.target.value)}
                 placeholder="e.g. PO-1024 or SO-501"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                className="input-base font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Authorized By / User
               </label>
               <input
@@ -465,48 +476,48 @@ export const StockTransactionModal: React.FC<Props> = ({
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 placeholder="User name"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-base"
                 required
               />
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              className="btn-secondary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || isStockOutExceeded}
-              className={`px-5 py-2 text-sm font-bold text-white rounded-lg shadow-sm transition-colors flex items-center gap-2 ${
+              className={`btn-base px-4 py-2 text-white ${
                 isStockOutExceeded
                   ? 'bg-slate-400 cursor-not-allowed opacity-60'
                   : activeTab === 'STOCK_IN'
-                  ? 'bg-emerald-600 hover:bg-emerald-700'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-500/20'
                   : activeTab === 'STOCK_OUT'
-                  ? 'bg-rose-600 hover:bg-rose-700'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? 'bg-rose-600 hover:bg-rose-700 shadow-sm shadow-rose-500/20'
+                  : 'bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/20'
               }`}
             >
               {loading ? (
                 'Processing...'
               ) : activeTab === 'STOCK_IN' ? (
                 <>
-                  <CheckCircle2 size={16} /> Confirm Stock In
+                  <CheckCircle2 size={15} /> Confirm Stock In
                 </>
               ) : activeTab === 'STOCK_OUT' ? (
                 <>
-                  <ArrowUpRight size={16} /> Confirm Stock Out
+                  <ArrowUpRight size={15} /> Confirm Stock Out
                 </>
               ) : (
                 <>
-                  <SlidersHorizontal size={16} /> Apply Adjustment
+                  <SlidersHorizontal size={15} /> Apply Adjustment
                 </>
               )}
             </button>

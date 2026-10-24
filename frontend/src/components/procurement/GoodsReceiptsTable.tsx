@@ -8,35 +8,35 @@ interface Props {
 
 export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+    <div className="card-base overflow-hidden">
       {/* Header Info */}
-      <div className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+      <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <PackageCheck size={18} className="text-emerald-500" />
             Goods Received Notes (GRN Audit Trail)
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Physical stock inward logs, carrier tracking, inspection condition notes, and purchase order receipts
+            Physical stock inward logs, carrier tracking, inspection notes, and warehouse allocations
           </p>
         </div>
-        <div className="text-xs font-semibold text-slate-500 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div className="badge-neutral text-xs">
           Total Shipments: {receipts.length}
         </div>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
-          <thead className="bg-slate-50 dark:bg-slate-800/50 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200/80 dark:border-slate-800 select-none">
-            <tr>
-              <th className="py-3 px-4 whitespace-nowrap">GRN #</th>
-              <th className="py-3 px-4 whitespace-nowrap">PO Reference</th>
-              <th className="py-3 px-4 whitespace-nowrap">Supplier</th>
-              <th className="py-3 px-4 whitespace-nowrap">Receipt Date & Receiver</th>
-              <th className="py-3 px-4 whitespace-nowrap">Carrier & Tracking</th>
-              <th className="py-3 px-4 whitespace-nowrap">Inwarded Items</th>
-              <th className="py-3 px-4 whitespace-nowrap">Quality Notes</th>
+        <table className="w-full text-left text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 dark:border-slate-800">
+              <th className="table-th">GRN Number</th>
+              <th className="table-th">PO Reference</th>
+              <th className="table-th">Supplier</th>
+              <th className="table-th">Receipt Date & Receiver</th>
+              <th className="table-th">Carrier & Tracking</th>
+              <th className="table-th">Inwarded Items</th>
+              <th className="table-th">Quality Notes</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -44,8 +44,8 @@ export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
               <tr>
                 <td colSpan={7} className="py-12 text-center text-slate-400 dark:text-slate-500">
                   <div className="flex flex-col items-center justify-center space-y-2">
-                    <Truck size={36} className="text-slate-300 dark:text-slate-600 stroke-[1.5]" />
-                    <p className="text-sm font-medium">No goods receipt records found</p>
+                    <Truck size={32} className="text-slate-400 dark:text-slate-600 stroke-[1.5]" />
+                    <p className="text-xs sm:text-sm font-medium">No goods receipt records found</p>
                     <p className="text-xs text-slate-400">Receive items against issued purchase orders to create inward shipments.</p>
                   </div>
                 </td>
@@ -57,10 +57,10 @@ export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
                 return (
                   <tr
                     key={grn.id}
-                    className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                    className="table-row-hover"
                   >
-                    {/* GRN # */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    {/* GRN Number */}
+                    <td className="table-td whitespace-nowrap">
                       <div className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
                         {grn.grn_number}
                       </div>
@@ -70,21 +70,21 @@ export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
                     </td>
 
                     {/* PO Reference */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800/60">
+                    <td className="table-td whitespace-nowrap">
+                      <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
                         {grn.po_number}
                       </span>
                     </td>
 
                     {/* Supplier */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="table-td whitespace-nowrap">
                       <div className="font-medium text-slate-800 dark:text-slate-200">
                         {grn.supplier_name}
                       </div>
                     </td>
 
                     {/* Receipt Date & Receiver */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="table-td whitespace-nowrap">
                       <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200">
                         <Calendar size={12} className="text-slate-400" />
                         <span>
@@ -102,7 +102,7 @@ export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
                     </td>
 
                     {/* Carrier & Tracking */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="table-td whitespace-nowrap">
                       <div className="font-medium text-slate-700 dark:text-slate-300">
                         {grn.carrier || 'Direct Supplier Delivery'}
                       </div>
@@ -112,15 +112,15 @@ export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
                     </td>
 
                     {/* Inwarded Items */}
-                    <td className="py-3.5 px-4 min-w-[200px]">
+                    <td className="table-td min-w-[200px]">
                       <div className="space-y-1">
                         {grn.items.map((it, idx) => (
                           <div key={idx} className="flex items-center justify-between text-[11px] gap-2">
                             <span className="text-slate-800 dark:text-slate-200 truncate max-w-[160px]">
                               {it.item_name}
                             </span>
-                            <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
-                              +{it.quantity_received} {it.unit_of_measurement}
+                            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400 shrink-0">
+                              +{it.quantity_received}
                             </span>
                           </div>
                         ))}
@@ -128,16 +128,11 @@ export const GoodsReceiptsTable: React.FC<Props> = ({ receipts }) => {
                     </td>
 
                     {/* Quality Notes */}
-                    <td className="py-3.5 px-4 max-w-[180px]">
-                      <div className="flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
-                        <ShieldCheck size={13} className="shrink-0 text-emerald-500" />
-                        <span className="truncate">{grn.items[0]?.condition_notes || 'Inspected & Passed'}</span>
+                    <td className="table-td">
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
+                        <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
+                        <span className="truncate max-w-[180px]">{grn.notes || (grn.items.length > 0 ? grn.items[0].condition_notes : 'Inspected & Passed')}</span>
                       </div>
-                      {grn.notes && (
-                        <p className="text-[10px] text-slate-400 mt-0.5 truncate" title={grn.notes}>
-                          {grn.notes}
-                        </p>
-                      )}
                     </td>
                   </tr>
                 );

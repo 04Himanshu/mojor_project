@@ -73,7 +73,7 @@ export const Inventory: React.FC = () => {
       setTotalItems(res.total);
     } catch (err: any) {
       console.error('Failed to load inventory', err);
-      toast.error('Failed to load inventory items. Make sure backend is running.', 'Network Error');
+      toast.error('Unable to load inventory records. Please check your connection.', 'Connection Error');
     } finally {
       setLoading(false);
     }
@@ -192,61 +192,61 @@ export const Inventory: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             Inventory Management
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Real-time stock tracking, stock in/out movements, alerts and valuation
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Real-time stock tracking, inbound/outbound movements, automated alerts and valuation
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => handleViewHistory(null)}
-            className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs transition-colors flex items-center gap-1.5"
+            className="btn-secondary"
           >
-            <History size={15} />
-            Movement History
+            <History size={14} />
+            <span>Movement History</span>
           </button>
 
           <button
             onClick={() => handleOpenTransaction(null, 'STOCK_IN')}
-            className="px-3.5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
+            className="btn-success"
           >
-            <ArrowRightLeft size={15} />
-            Stock In / Out
+            <ArrowRightLeft size={14} />
+            <span>Stock In / Out</span>
           </button>
 
           <button
             onClick={handleAddNewItem}
-            className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+            className="btn-primary"
           >
-            <Plus size={16} />
-            Add New Item
+            <Plus size={15} />
+            <span>Add New Item</span>
           </button>
         </div>
       </div>
 
       {/* Replenishment Alert Banner */}
       {replenishmentNeededCount > 0 && statusFilter === 'ALL' && (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800 dark:text-slate-200 shadow-xs">
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800 dark:text-slate-200">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-500 text-white rounded-lg shadow-xs shrink-0">
+            <div className="w-9 h-9 bg-amber-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
               <AlertTriangle size={18} />
             </div>
             <div>
-              <span className="font-bold text-sm text-slate-900 dark:text-white">
+              <span className="font-bold text-xs text-slate-900 dark:text-white uppercase tracking-wider block">
                 Inventory Replenishment Required
               </span>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                <span className="font-semibold text-rose-600 dark:text-rose-400">{stats?.out_of_stock_count || 0} Out of Stock</span> and{' '}
-                <span className="font-semibold text-amber-600 dark:text-amber-400">{stats?.low_stock_count || 0} below reorder threshold</span>.
+                <span className="font-semibold text-rose-600 dark:text-rose-400 font-mono">{stats?.out_of_stock_count || 0} Out of Stock</span> and{' '}
+                <span className="font-semibold text-amber-600 dark:text-amber-400 font-mono">{stats?.low_stock_count || 0} below reorder threshold</span>.
               </p>
             </div>
           </div>
           <button
             onClick={() => handleStatusFilterChange('LOW_STOCK')}
-            className="px-4 py-2 text-xs font-bold rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition-colors self-start sm:self-auto whitespace-nowrap shadow-xs hover:shadow-sm"
+            className="btn-base px-3.5 py-1.5 text-xs font-bold text-amber-900 dark:text-amber-200 bg-amber-200/80 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-900/90 rounded-xl"
           >
             Review Low Stock Items →
           </button>

@@ -52,37 +52,44 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
     <div 
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50 ring-1 ring-black/5 dark:ring-white/10 flex flex-col modal-content-animate my-auto print:m-0 print:p-0 print:border-none print:shadow-none print:w-full print:bg-white"
+        className="bg-white dark:bg-[#101726] border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col modal-content-animate my-auto print:m-0 print:p-0 print:border-none print:shadow-none print:w-full print:bg-white"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Toolbar (hidden in print) */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800 print:hidden">
-          <div className="flex items-center gap-2">
-            <Receipt className="text-blue-600 dark:text-blue-400" size={18} />
-            <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-              Tax Invoice Preview
-            </span>
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 print:hidden">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+              <Receipt size={17} />
+            </div>
+            <div>
+              <span className="text-sm font-semibold text-slate-900 dark:text-white block">
+                Official Tax Invoice
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                {order.order_number}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
+              className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5"
             >
               <Printer size={14} />
-              Print / Save PDF
+              <span>Print / Save PDF</span>
             </button>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+              className="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
@@ -99,11 +106,11 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
               {/* Top Header & Company Info */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-slate-200">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-sm">
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
                       EOM
                     </div>
-                    <h1 className="text-xl font-black tracking-tight text-slate-900">
+                    <h1 className="text-lg font-bold tracking-tight text-slate-900">
                       {invoice.company_name}
                     </h1>
                   </div>
@@ -111,7 +118,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                     {invoice.company_address}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
-                    Email: {invoice.company_email} | Phone: {invoice.company_phone}
+                    Email: {invoice.company_email} • Phone: {invoice.company_phone}
                   </p>
                   <p className="text-xs font-mono font-semibold text-slate-700 mt-1">
                     GSTIN: {invoice.company_gstin}
@@ -119,10 +126,10 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                 </div>
 
                 <div className="text-left sm:text-right">
-                  <div className="text-2xl font-black uppercase tracking-wider text-blue-600">
+                  <div className="text-xs font-bold uppercase tracking-widest text-blue-600">
                     TAX INVOICE
                   </div>
-                  <div className="mt-1 font-mono font-bold text-sm text-slate-900">
+                  <div className="mt-1 font-mono font-bold text-base text-slate-900">
                     {invoice.invoice_number}
                   </div>
                   <div className="text-xs text-slate-500 mt-1">
@@ -140,7 +147,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                   {/* Payment Stamp Badge */}
                   <div className="mt-3">
                     <span
-                      className={`inline-block px-3 py-1 rounded-md text-xs font-black uppercase tracking-wider border ${
+                      className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
                         invoice.payment_status === 'Paid'
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                           : 'bg-amber-50 text-amber-700 border-amber-300'
@@ -155,7 +162,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
               {/* Bill To & Ship To Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 border-b border-slate-200">
                 <div>
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Billed To:
                   </div>
                   <div className="text-sm font-bold text-slate-900">{invoice.customer_name}</div>
@@ -168,12 +175,12 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                 </div>
 
                 <div>
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Shipping & Payment:
                   </div>
                   <div className="text-xs text-slate-700">
                     <span className="font-semibold text-slate-900">Delivery Address: </span>
-                    {invoice.shipping_address || 'Customer Handover / Store Pickup'}
+                    {invoice.shipping_address || 'Store Pickup / Direct Delivery'}
                   </div>
                   <div className="text-xs text-slate-700 mt-1">
                     <span className="font-semibold text-slate-900">Payment Mode: </span>

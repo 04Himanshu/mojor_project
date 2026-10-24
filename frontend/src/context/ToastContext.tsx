@@ -121,7 +121,7 @@ const ToastCard: React.FC<{
     >
       <div className="p-3.5 sm:p-4 flex items-start gap-3">
         {/* Icon */}
-        <div className={`p-2 rounded-xl border ${config.iconBg} shrink-0 mt-0.5 shadow-2xs`}>
+        <div className={`p-2 rounded-xl border ${config.iconBg} shrink-0 mt-0.5 shadow-sm`}>
           {config.icon}
         </div>
 

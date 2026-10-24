@@ -163,7 +163,7 @@ def _format_po_response(po: PurchaseOrder) -> PurchaseOrderResponse:
         supplier_phone=po.supplier.phone if po.supplier else None,
         supplier_gstin=po.supplier.gstin if po.supplier else None,
         user_id=po.user_id,
-        user_name=po.user.username if po.user else "Admin User",
+        user_name=po.user.name if po.user else "Admin User",
         order_date=po.order_date,
         expected_delivery_date=po.expected_delivery_date,
         status=po.status,

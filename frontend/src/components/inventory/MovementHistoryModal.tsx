@@ -92,21 +92,21 @@ export const MovementHistoryModal: React.FC<Props> = ({
   const getBadge = (type: TransactionType) => {
     if (type === 'STOCK_IN') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400">
-          <ArrowDownRight size={13} /> Stock In
+        <span className="badge-success">
+          <ArrowDownRight size={12} /> Stock In
         </span>
       );
     }
     if (type === 'STOCK_OUT') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-400">
-          <ArrowUpRight size={13} /> Stock Out
+        <span className="badge-danger">
+          <ArrowUpRight size={12} /> Stock Out
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-400">
-        <SlidersHorizontal size={13} /> Adjustment
+      <span className="badge-info">
+        <SlidersHorizontal size={12} /> Adjustment
       </span>
     );
   };
@@ -127,60 +127,60 @@ export const MovementHistoryModal: React.FC<Props> = ({
     <div 
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 dark:bg-black/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-black/5 dark:ring-white/10 flex flex-col modal-content-animate my-auto"
+        className="bg-white dark:bg-[#101726] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl shadow-black/40 flex flex-col modal-content-animate my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 sticky top-0 bg-white/95 dark:bg-[#101726]/95 backdrop-blur-sm z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600">
-              <FileText size={20} />
+            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
+              <FileText size={18} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                {item ? `Stock Movement History: ${item.name}` : 'All Stock Movement History'}
+              <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                {item ? `Stock Movement Audit: ${item.name}` : 'Comprehensive Stock Movements Audit'}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {item ? `SKU: ${item.sku} · Current Stock: ${item.quantity} ${item.unit_of_measurement}` : `${totalCount} recorded stock transactions`}
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {item ? `SKU: ${item.sku} · Current Stock: ${item.quantity} ${item.unit_of_measurement}` : `${totalCount} verified stock transactions`}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Filters Bar */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-4 bg-slate-50/70 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 min-w-[240px]">
             <div className="relative w-full max-w-sm">
-              <Search size={15} className="absolute left-3 top-2.5 text-slate-400" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 placeholder={item ? "Search reasons or orders..." : "Search item, SKU, reason, order..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !item && fetchMovements()}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-base pl-8 py-1.5"
               />
             </div>
             {!item && (
               <button
                 type="button"
                 onClick={fetchMovements}
-                className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-xs flex items-center gap-1"
+                className="btn-secondary px-2.5 py-1.5 text-xs"
                 title="Search"
               >
-                <Search size={14} />
+                <Search size={13} />
               </button>
             )}
           </div>
@@ -192,9 +192,9 @@ export const MovementHistoryModal: React.FC<Props> = ({
                 setTypeFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="select-base w-44 py-1.5"
             >
-              <option value="ALL">All Movement Types</option>
+              <option value="ALL">All Types</option>
               <option value="STOCK_IN">Stock In (+)</option>
               <option value="STOCK_OUT">Stock Out (-)</option>
               <option value="ADJUSTMENT">Adjustment</option>
@@ -202,55 +202,55 @@ export const MovementHistoryModal: React.FC<Props> = ({
 
             <button
               onClick={fetchMovements}
-              className="p-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title="Refresh"
             >
-              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={14} className={loading ? 'animate-spin text-blue-500' : ''} />
             </button>
           </div>
         </div>
 
         {/* Table Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto custom-scrollbar">
           {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center text-slate-400 text-sm">
-              <RefreshCw size={24} className="animate-spin mb-2 text-blue-500" />
-              Loading movement logs...
+            <div className="py-20 flex flex-col items-center justify-center text-slate-400 text-xs">
+              <RefreshCw size={22} className="animate-spin mb-2 text-blue-500" />
+              Loading movement audit records...
             </div>
           ) : filteredMovements.length === 0 ? (
-            <div className="py-16 text-center text-slate-400 text-sm">
-              No stock movements found matching your filter criteria.
+            <div className="py-16 text-center text-slate-400 text-xs">
+              No stock movements found matching filter criteria.
             </div>
           ) : (
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-100 dark:bg-slate-800/60 sticky top-0 text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">
+            <table className="w-full text-left text-xs">
+              <thead>
                 <tr>
-                  <th className="px-4 py-3">Date & Time</th>
-                  {!item && <th className="px-4 py-3">Item / SKU</th>}
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3 text-right">Change</th>
-                  <th className="px-4 py-3 text-center">Previous → Resulting</th>
-                  <th className="px-4 py-3">Reason</th>
-                  <th className="px-4 py-3">Related Order</th>
-                  <th className="px-4 py-3">User</th>
+                  <th className="table-th">Date & Time</th>
+                  {!item && <th className="table-th">Item / SKU</th>}
+                  <th className="table-th">Type</th>
+                  <th className="table-th text-right">Change</th>
+                  <th className="table-th text-center">Previous → Resulting</th>
+                  <th className="table-th">Reason</th>
+                  <th className="table-th">Order Ref</th>
+                  <th className="table-th">Authorized User</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {filteredMovements.map((m) => (
-                  <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-mono whitespace-nowrap">
+                  <tr key={m.id} className="table-row-hover">
+                    <td className="table-td text-slate-500 dark:text-slate-400 font-mono whitespace-nowrap">
                       {formatDate(m.created_at)}
                     </td>
                     {!item && (
-                      <td className="px-4 py-3">
+                      <td className="table-td">
                         <div className="font-semibold text-slate-900 dark:text-slate-100">{m.item_name}</div>
                         <div className="text-[10px] text-slate-400 font-mono">{m.item_sku}</div>
                       </td>
                     )}
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="table-td whitespace-nowrap">
                       {getBadge(m.transaction_type)}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono font-bold whitespace-nowrap">
+                    <td className="table-td text-right font-mono font-bold whitespace-nowrap tabular-nums">
                       {m.transaction_type === 'STOCK_IN' && (
                         <span className="text-emerald-600 dark:text-emerald-400">+{m.quantity}</span>
                       )}
@@ -263,24 +263,24 @@ export const MovementHistoryModal: React.FC<Props> = ({
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                    <td className="table-td text-center font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap tabular-nums">
                       <span className="text-slate-400">{m.previous_quantity}</span>
                       <span className="mx-1 text-slate-400">→</span>
                       <span className="font-bold text-slate-900 dark:text-slate-100">{m.resulting_quantity}</span>
                     </td>
-                    <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                    <td className="table-td text-slate-700 dark:text-slate-300">
                       {m.reason}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="table-td whitespace-nowrap">
                       {m.reference_order ? (
-                        <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        <span className="font-mono text-[11px] px-2 py-0.5 rounded-md bg-blue-50/60 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-900/40">
                           {m.reference_order}
                         </span>
                       ) : (
                         <span className="text-slate-400">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                    <td className="table-td text-slate-600 dark:text-slate-400 whitespace-nowrap">
                       {m.user_name}
                     </td>
                   </tr>
@@ -292,7 +292,7 @@ export const MovementHistoryModal: React.FC<Props> = ({
 
         {/* Pagination */}
         {!item && totalPages > 1 && (
-          <div className="px-6 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
+          <div className="px-6 py-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 flex justify-between items-center text-xs text-slate-500">
             <span>
               Page {page} of {totalPages} ({totalCount} total entries)
             </span>
@@ -300,14 +300,14 @@ export const MovementHistoryModal: React.FC<Props> = ({
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                className="btn-secondary px-2.5 py-1 text-xs"
               >
                 Previous
               </button>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                className="btn-secondary px-2.5 py-1 text-xs"
               >
                 Next
               </button>

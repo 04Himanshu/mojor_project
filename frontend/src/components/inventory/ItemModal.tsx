@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { InventoryItem, CreateItemPayload, UpdateItemPayload } from '../../types/inventory';
-import { X, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Sparkles, AlertCircle, Package } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -49,7 +49,6 @@ export const ItemModal: React.FC<Props> = ({
       setInitialQuantity(itemToEdit.quantity);
       setIsActive(itemToEdit.is_active);
     } else {
-      // Defaults for new item
       setSku('');
       setName('');
       setDescription('');
@@ -153,37 +152,42 @@ export const ItemModal: React.FC<Props> = ({
     <div 
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 dark:bg-black/75 backdrop-blur-md modal-backdrop-animate overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
-        className="bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50 ring-1 ring-black/5 dark:ring-white/10 flex flex-col modal-content-animate my-auto"
+        className="bg-white dark:bg-[#101726] border border-slate-200/90 dark:border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/40 flex flex-col modal-content-animate my-auto custom-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              {isEdit ? 'Edit Inventory Item' : 'Add New Inventory Item'}
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {isEdit ? `Updating ${itemToEdit?.sku}` : 'Fill in the specifications for the new stock item'}
-            </p>
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 sticky top-0 bg-white/95 dark:bg-[#101726]/95 backdrop-blur-sm z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
+              <Package size={18} />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                {isEdit ? 'Edit Inventory Item' : 'Register New Inventory Item'}
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {isEdit ? `Updating ${itemToEdit?.sku}` : 'Fill in specifications for the new stock item'}
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mx-6 mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
-            <AlertCircle size={16} className="shrink-0" />
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs">
+            <AlertCircle size={15} className="shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -193,17 +197,17 @@ export const ItemModal: React.FC<Props> = ({
           {/* Row 1: SKU & Name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  SKU Code <span className="text-red-500">*</span>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  SKU Code <span className="text-rose-500">*</span>
                 </label>
                 {!isEdit && (
                   <button
                     type="button"
                     onClick={handleGenerateSku}
-                    className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                    className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-medium cursor-pointer"
                   >
-                    <Sparkles size={12} /> Auto-generate
+                    <Sparkles size={11} /> Auto-generate
                   </button>
                 )}
               </div>
@@ -213,25 +217,23 @@ export const ItemModal: React.FC<Props> = ({
                 onChange={(e) => setSku(e.target.value.toUpperCase())}
                 disabled={isEdit}
                 placeholder="e.g. ELEC-001"
-                className={`w-full px-3 py-2 text-sm rounded-lg border ${
-                  isEdit
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-not-allowed border-slate-200 dark:border-slate-700'
-                    : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono`}
+                className={`input-base font-mono ${
+                  isEdit ? 'opacity-60 cursor-not-allowed bg-slate-100 dark:bg-slate-800' : ''
+                }`}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Item Name <span className="text-red-500">*</span>
+              <label className="form-label">
+                Item Name <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Wireless Ergonomic Mouse"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-base"
                 required
               />
             </div>
@@ -240,13 +242,13 @@ export const ItemModal: React.FC<Props> = ({
           {/* Row 2: Category & Unit of Measurement */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Category <span className="text-red-500">*</span>
+              <label className="form-label">
+                Category <span className="text-rose-500">*</span>
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="select-base"
               >
                 {existingCategories.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -264,33 +266,31 @@ export const ItemModal: React.FC<Props> = ({
                   placeholder="Enter custom category name"
                   value={customCategory}
                   onChange={(e) => setCustomCategory(e.target.value)}
-                  className="mt-2 w-full px-3 py-2 text-sm rounded-lg border border-blue-400 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-base mt-2 border-blue-400"
                   required
                 />
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="form-label">
                 Unit of Measurement (UOM)
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={unitOfMeasurement}
-                  onChange={(e) => setUnitOfMeasurement(e.target.value)}
-                  placeholder="e.g. pcs, kg, box"
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex gap-1.5 flex-wrap mt-1.5">
-                {commonUnits.slice(0, 5).map((u) => (
+              <input
+                type="text"
+                value={unitOfMeasurement}
+                onChange={(e) => setUnitOfMeasurement(e.target.value)}
+                placeholder="e.g. pcs, kg, box"
+                className="input-base"
+                required
+              />
+              <div className="flex gap-1.5 flex-wrap mt-2">
+                {commonUnits.slice(0, 6).map((u) => (
                   <button
                     key={u}
                     type="button"
                     onClick={() => setUnitOfMeasurement(u)}
-                    className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                    className="text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                   >
                     {u}
                   </button>
@@ -301,7 +301,7 @@ export const ItemModal: React.FC<Props> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="form-label">
               Description (Optional)
             </label>
             <textarea
@@ -309,47 +309,47 @@ export const ItemModal: React.FC<Props> = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed specifications, storage requirements or notes..."
-              className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-base py-2.5 resize-none"
             />
           </div>
 
           {/* Pricing: Cost Price & Selling Price */}
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800/80 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <div className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Pricing & Valuation
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Cost Price (₹) <span className="text-slate-400 font-normal">used for stock valuation</span>
+                <label className="form-label">
+                  Cost Price (₹) <span className="text-slate-400 font-normal lowercase">stock valuation</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2 text-slate-400 text-sm">₹</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">₹</span>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={costPrice}
                     onChange={(e) => setCostPrice(parseFloat(e.target.value) || 0)}
-                    className="w-full pl-7 pr-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="input-base pl-8 font-mono"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="form-label">
                   Selling Price / Unit Price (₹)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2 text-slate-400 text-sm">₹</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">₹</span>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={sellingPrice}
                     onChange={(e) => setSellingPrice(parseFloat(e.target.value) || 0)}
-                    className="w-full pl-7 pr-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="input-base pl-8 font-mono"
                     required
                   />
                 </div>
@@ -358,14 +358,14 @@ export const ItemModal: React.FC<Props> = ({
           </div>
 
           {/* Stock Levels & Reorder Configuration */}
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800/80 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <div className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Inventory Quantities & Alert Threshold
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {!isEdit ? (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     Initial Quantity on Hand
                   </label>
                   <input
@@ -373,28 +373,28 @@ export const ItemModal: React.FC<Props> = ({
                     min="0"
                     value={initialQuantity}
                     onChange={(e) => setInitialQuantity(parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="input-base font-mono"
                   />
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="form-hint">
                     Will log an initial Stock In entry automatically.
                   </p>
                 </div>
               ) : (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="form-label">
                     Current Quantity
                   </label>
-                  <div className="px-3 py-2 text-sm font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 rounded-lg font-mono">
+                  <div className="px-3.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 rounded-xl font-mono border border-slate-200/60 dark:border-slate-700">
                     {itemToEdit?.quantity} {itemToEdit?.unit_of_measurement}
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    To modify quantity, use Stock In, Stock Out, or Physical Adjustment.
+                  <p className="form-hint">
+                    Modify quantity via Stock In, Stock Out, or Physical Adjustment.
                   </p>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="form-label">
                   Reorder Level (Alert Threshold)
                 </label>
                 <input
@@ -402,24 +402,24 @@ export const ItemModal: React.FC<Props> = ({
                   min="0"
                   value={reorderLevel}
                   onChange={(e) => setReorderLevel(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                  className="input-base font-mono"
                   required
                 />
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Triggers "Low Stock" alert when quantity ≤ this level.
+                <p className="form-hint">
+                  Triggers "Low Stock" alert when quantity ≤ threshold.
                 </p>
               </div>
             </div>
           </div>
 
           {/* Active Status */}
-          <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/40">
             <div>
-              <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                 Item Status
               </span>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Active items are visible in operations and stock calculations.
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Active items are visible in operations and catalog searches.
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -429,24 +429,24 @@ export const ItemModal: React.FC<Props> = ({
                 onChange={(e) => setIsActive(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
+              <div className="w-10 h-5 bg-slate-300 dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
             </label>
           </div>
 
           {/* Footer buttons */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              className="btn-secondary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg shadow-sm transition-colors flex items-center gap-2"
+              className="btn-primary"
             >
               {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Item'}
             </button>
@@ -457,4 +457,3 @@ export const ItemModal: React.FC<Props> = ({
     document.body
   );
 };
-

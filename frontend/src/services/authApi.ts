@@ -1,21 +1,5 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
 import type { AuthResponse, DemoAccount, LoginPayload, AuthUser } from '../types/auth';
-
-const apiClient = axios.create({
-  baseURL: '/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Attach bearer token if present in localStorage or sessionStorage
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('eom_auth_token') || sessionStorage.getItem('eom_auth_token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 export const authApi = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
@@ -28,6 +12,24 @@ export const authApi = {
 
   getMe: async (): Promise<AuthUser> => {
     const res = await apiClient.get<AuthUser>('/auth/me');
+    return res.data;
+  },
+
+  logout: async (): Promise<{ message: string }> => {
+    const res = await apiClient.post<{ message: string }>('/auth/logout');
+    return res.data;
+  },
+
+  forgotPassword: async (email: string): Promise<{ message: string; reset_token?: string }> => {
+    const res = await apiClient.post<{ message: string; reset_token?: string }>('/auth/forgot-password', { email });
+    return res.data;
+  },
+
+  resetPassword: async (token: string, new_password: string): Promise<{ message: string }> => {
+    const res = await apiClient.post<{ message: string }>('/auth/reset-password', {
+      token,
+      new_password,
+    });
     return res.data;
   },
 

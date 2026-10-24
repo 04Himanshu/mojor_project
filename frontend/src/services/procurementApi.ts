@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
 import type {
   Supplier,
   SupplierCreatePayload,
@@ -9,14 +9,6 @@ import type {
   ProcurementStats
 } from '../types/procurement';
 
-const API_BASE = '/api/v1';
-
-const apiClient = axios.create({
-  baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 export const procurementApi = {
   // Statistics

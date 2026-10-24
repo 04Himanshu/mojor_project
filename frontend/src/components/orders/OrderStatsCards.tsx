@@ -14,68 +14,51 @@ export const OrderStatsCards: React.FC<Props> = ({ stats }) => {
       title: 'Total Revenue',
       value: `₹${stats.total_revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`,
       subtitle: `${stats.total_orders} Orders Placed`,
-      icon: <Wallet size={20} />,
-      accentColor: 'from-blue-500 to-indigo-500',
-      iconBg: 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 border-blue-100 dark:border-blue-900/50',
-      pill: {
-        text: 'Gross Sales',
-        style: 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800/60',
-        dot: 'bg-blue-500'
-      }
+      icon: <Wallet size={18} />,
+      iconContainer: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+      pillClass: 'badge-info',
+      dotClass: 'bg-blue-500',
+      pillText: 'Gross Sales'
     },
     {
       title: 'Pending Orders',
       value: stats.pending_count,
       subtitle: 'Awaiting confirmation',
-      icon: <Clock size={20} />,
-      accentColor: 'from-amber-500 to-orange-500',
-      iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border-amber-100 dark:border-amber-900/50',
-      pill: {
-        text: stats.pending_count > 0 ? 'Action Needed' : 'All Clear',
-        style: stats.pending_count > 0 
-          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800/60'
-          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700',
-        dot: stats.pending_count > 0 ? 'bg-amber-500 animate-pulse' : 'bg-slate-400'
-      }
+      icon: <Clock size={18} />,
+      iconContainer: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+      pillClass: stats.pending_count > 0 ? 'badge-warning' : 'badge-neutral',
+      dotClass: stats.pending_count > 0 ? 'bg-amber-500 animate-pulse' : 'bg-slate-400',
+      pillText: stats.pending_count > 0 ? 'Action Needed' : 'All Clear'
     },
     {
       title: 'Confirmed Orders',
       value: stats.confirmed_count,
       subtitle: 'Stock allocated',
-      icon: <CheckCircle2 size={20} />,
-      accentColor: 'from-indigo-500 to-purple-500',
-      iconBg: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/50',
-      pill: {
-        text: 'Stock Deducted',
-        style: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/60',
-        dot: 'bg-indigo-500'
-      }
+      icon: <CheckCircle2 size={18} />,
+      iconContainer: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+      pillClass: 'badge-purple',
+      dotClass: 'bg-indigo-500',
+      pillText: 'Allocated'
     },
     {
       title: 'Dispatched Orders',
       value: stats.dispatched_count,
       subtitle: 'Shipped to customer',
-      icon: <Truck size={20} />,
-      accentColor: 'from-sky-500 to-cyan-500',
-      iconBg: 'bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 border-sky-100 dark:border-sky-900/50',
-      pill: {
-        text: stats.dispatched_count > 0 ? 'En Route' : 'Idle',
-        style: 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border-sky-200 dark:border-sky-800/60',
-        dot: 'bg-sky-500'
-      }
+      icon: <Truck size={18} />,
+      iconContainer: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
+      pillClass: stats.dispatched_count > 0 ? 'badge-info' : 'badge-neutral',
+      dotClass: stats.dispatched_count > 0 ? 'bg-sky-500' : 'bg-slate-400',
+      pillText: stats.dispatched_count > 0 ? 'En Route' : 'Idle'
     },
     {
       title: 'Delivered Orders',
       value: stats.delivered_count,
       subtitle: 'Delivered to customer',
-      icon: <CheckCheck size={20} />,
-      accentColor: 'from-emerald-500 to-teal-500',
-      iconBg: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50',
-      pill: {
-        text: 'Completed',
-        style: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
-        dot: 'bg-emerald-500'
-      }
+      icon: <CheckCheck size={18} />,
+      iconContainer: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+      pillClass: 'badge-success',
+      dotClass: 'bg-emerald-500',
+      pillText: 'Completed'
     }
   ];
 
@@ -84,37 +67,31 @@ export const OrderStatsCards: React.FC<Props> = ({ stats }) => {
       {cards.map((c) => (
         <div
           key={c.title}
-          className="bg-white dark:bg-[#0F172A] rounded-2xl border border-slate-200/80 dark:border-slate-800/90 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+          className="card-base p-5 flex flex-col justify-between group hover:border-slate-300 dark:hover:border-slate-700/90 transition-all duration-150"
         >
-          {/* Subtle top accent gradient line */}
-          <div className={`h-1 w-full bg-gradient-to-r ${c.accentColor}`} />
-
-          <div className="p-4.5 sm:p-5 flex flex-col justify-between h-full space-y-3">
-            {/* Header: Title & Icon */}
-            <div className="flex items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center justify-between gap-2 mb-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 select-none truncate">
                 {c.title}
               </span>
-              <div className={`p-2 rounded-xl border ${c.iconBg} shadow-2xs shrink-0 flex items-center justify-center`}>
+              <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${c.iconContainer}`}>
                 {c.icon}
               </div>
             </div>
 
-            {/* Metric Value */}
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
               {c.value}
             </div>
+          </div>
 
-            {/* Footer: Subtitle on Left, Pill Badge on Right (align like Healthy stock levels / Optimal) */}
-            <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-slate-800/60 gap-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate" title={c.subtitle}>
-                {c.subtitle}
-              </span>
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap shrink-0 shadow-2xs ${c.pill.style}`}>
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.pill.dot}`} />
-                {c.pill.text}
-              </span>
-            </div>
+          <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/70 text-xs gap-2 min-w-0">
+            <span className="text-slate-500 dark:text-slate-400 font-medium truncate min-w-0" title={c.subtitle}>
+              {c.subtitle}
+            </span>
+            <span className={`${c.pillClass} text-[10px] py-0.5 px-2.5 whitespace-nowrap shrink-0`}>
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dotClass}`} />
+              <span className="whitespace-nowrap">{c.pillText}</span>
+            </span>
           </div>
         </div>
       ))}

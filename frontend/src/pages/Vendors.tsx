@@ -201,7 +201,7 @@ export const Vendors: React.FC = () => {
 
   const handleConfirmReceiveGoods = async (data: GoodsReceiptCreatePayload) => {
     const res = await procurementApi.receiveGoods(data);
-    toast.success(`Goods inwarded! Generated GRN #${res.grn_number} and updated inventory counts.`, 'GRN Processed');
+    toast.success(`Goods inwarded! Generated GRN ${res.grn_number} and updated inventory counts.`, 'GRN Processed');
     await refreshAllData();
   };
 
@@ -215,19 +215,19 @@ export const Vendors: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-            <Building2 className="text-blue-600 dark:text-blue-400" size={26} />
-            Vendor & Procurement Management
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+            <Building2 className="text-blue-500" size={24} />
+            Vendor & Procurement
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Manage suppliers, purchase orders, goods received notes (GRN), purchase costs, and stock inwarding
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Manage suppliers, purchase orders, goods receipts (GRN), and stock inwarding
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => refreshAllData()}
-            className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs transition-colors flex items-center gap-1.5"
+            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             <span>Refresh</span>
@@ -235,18 +235,18 @@ export const Vendors: React.FC = () => {
 
           <button
             onClick={handleOpenCreateSupplier}
-            className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs transition-colors flex items-center gap-1.5"
+            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
           >
             <Plus size={14} />
-            <span>+ New Supplier</span>
+            <span>New Supplier</span>
           </button>
 
           <button
             onClick={() => handleOpenCreatePO()}
-            className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs shadow-blue-500/20 transition-all flex items-center gap-1.5"
+            className="btn-primary text-xs py-2 px-3.5 flex items-center gap-1.5"
           >
             <FileText size={14} />
-            <span>+ Create Purchase Order</span>
+            <span>Create Purchase Order</span>
           </button>
         </div>
       </div>
@@ -255,48 +255,48 @@ export const Vendors: React.FC = () => {
       <ProcurementStatsCards stats={stats} />
 
       {/* Main Workspace Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200/80 dark:border-slate-800 pb-px">
+      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-px">
         <button
           onClick={() => setActiveTab('orders')}
-          className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'orders'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           }`}
         >
           <FileText size={15} />
           <span>Purchase Orders</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 font-mono">
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono font-medium">
             {orders.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('suppliers')}
-          className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'suppliers'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           }`}
         >
           <Users size={15} />
           <span>Suppliers & Vendors</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 font-mono">
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono font-medium">
             {suppliers.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('receipts')}
-          className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'receipts'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           }`}
         >
           <Truck size={15} />
           <span>Goods Received (GRN)</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 font-mono">
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-medium">
             {receipts.length}
           </span>
         </button>

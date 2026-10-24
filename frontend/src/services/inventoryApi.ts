@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
 import type {
   InventoryItem,
   PaginatedInventoryResponse,
@@ -12,14 +12,6 @@ import type {
   StockMovement
 } from '../types/inventory';
 
-const API_BASE = '/api/v1';
-
-const apiClient = axios.create({
-  baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 export const inventoryApi = {
   // 1. Inventory List

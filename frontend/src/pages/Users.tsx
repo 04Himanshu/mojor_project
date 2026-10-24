@@ -77,7 +77,7 @@ export const UsersPage: React.FC = () => {
       setUsers(usersData);
     } catch (err: any) {
       console.error('Failed to load user and role records:', err);
-      toast.error('Failed to fetch user directory. Please ensure the backend is running.', 'Network Error');
+      toast.error('Unable to load staff directory. Please check your network connection.', 'Connection Error');
     } finally {
       setLoading(false);
     }
@@ -150,14 +150,14 @@ export const UsersPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Staff & Access Control
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-mono">
-              RBAC PRODUCTION
+            <span className="badge-info text-[10px]">
+              Access Control
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Manage staff accounts, department assignments, and configure granular role-based security privileges
           </p>
         </div>
@@ -167,9 +167,10 @@ export const UsersPage: React.FC = () => {
           <button
             onClick={() => loadData()}
             title="Refresh Directory"
-            className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl transition-all"
+            className="btn-secondary text-xs py-2 px-3"
           >
-            <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            <span className="ml-1.5">Refresh</span>
           </button>
 
           <button
@@ -177,10 +178,10 @@ export const UsersPage: React.FC = () => {
               setRoleToEdit(null);
               setIsRoleModalOpen(true);
             }}
-            className="px-3.5 py-2 text-xs font-semibold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 rounded-xl transition-all flex items-center gap-1.5 shadow-2xs"
+            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 text-purple-600 dark:text-purple-400"
           >
             <ShieldCheck size={14} />
-            <span>+ New Role</span>
+            <span>New Role</span>
           </button>
 
           <button
@@ -188,10 +189,10 @@ export const UsersPage: React.FC = () => {
               setUserToEdit(null);
               setIsUserModalOpen(true);
             }}
-            className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs shadow-blue-500/20 transition-all flex items-center gap-1.5"
+            className="btn-primary text-xs py-2 px-3.5 flex items-center gap-1.5"
           >
             <UserPlus size={14} />
-            <span>+ Add Staff Member</span>
+            <span>Add Staff Member</span>
           </button>
         </div>
       </div>
@@ -200,33 +201,33 @@ export const UsersPage: React.FC = () => {
       <UserStatsCards stats={stats} />
 
       {/* Main Workspace Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200/80 dark:border-slate-800 pb-px">
+      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-px">
         <button
           onClick={() => setActiveTab('users')}
-          className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'users'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           }`}
         >
           <Users size={15} />
           <span>Staff Directory</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 font-mono">
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono font-medium">
             {users.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('roles')}
-          className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'roles'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           }`}
         >
           <ShieldCheck size={15} />
           <span>Roles & Permissions</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-purple-50 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 font-mono">
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-medium">
             {roles.length}
           </span>
         </button>

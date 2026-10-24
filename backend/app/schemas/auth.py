@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
 from app.schemas.user import UserResponse
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    email: str = Field(..., description="Staff work email address")
+    password: str = Field(..., description="Staff account password")
 
 class AuthResponse(BaseModel):
     access_token: str
@@ -19,3 +19,17 @@ class DemoStaffAccount(BaseModel):
     department: str
     avatar_color: str
     password_hint: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: str = Field(..., description="Registered staff email address")
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+    reset_token: Optional[str] = Field(None, description="Reset token provided for local/testing delivery")
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., description="Valid password reset token")
+    new_password: str = Field(..., min_length=6, description="New strong account password")
+
+class MessageResponse(BaseModel):
+    message: str

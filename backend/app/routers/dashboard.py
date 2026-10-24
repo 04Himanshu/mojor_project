@@ -1,14 +1,22 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.dependencies.permissions import get_current_user
 from app.models.inventory import Inventory
+from app.models.user import User
 from app.services import inventory_service
 
 router = APIRouter()
 
 @router.get("/")
-def get_dashboard_stats(db: Session = Depends(get_db)):
-    """Calculate dashboard summary and low-stock alerts dynamically from current database quantities."""
+def get_dashboard_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Calculate operations dashboard metrics dynamically from live database.
+    Requires authenticated active staff token.
+    """
     stats = inventory_service.get_inventory_stats(db)
     low_stock_items = inventory_service.get_low_stock_alerts(db)
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
 import type {
   Order,
   OrderStats,
@@ -8,14 +8,6 @@ import type {
   Customer
 } from '../types/order';
 
-const API_BASE = '/api/v1';
-
-const apiClient = axios.create({
-  baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 export const orderApi = {
   getOrders: async (params?: {
