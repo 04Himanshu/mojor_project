@@ -159,6 +159,7 @@ class StockAdjustmentRequest(BaseModel):
 class InventorySummaryStats(BaseModel):
     total_skus: int
     total_stock_value: float
+    total_units: int = 0
     in_stock_count: int
     low_stock_count: int
     out_of_stock_count: int

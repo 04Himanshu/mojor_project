@@ -1,6 +1,6 @@
 import React from 'react';
 import type { InventoryStats } from '../../types/inventory';
-import { Wallet, AlertTriangle, AlertOctagon, CheckCircle2 } from 'lucide-react';
+import { Wallet, AlertTriangle, AlertOctagon, CheckCircle2, Boxes } from 'lucide-react';
 
 interface Props {
   stats: InventoryStats | null;
@@ -13,15 +13,25 @@ export const InventoryStatsCards: React.FC<Props> = ({ stats }) => {
     {
       title: 'Total Stock Valuation',
       value: `₹${stats.total_stock_value.toLocaleString('en-IN')}`,
-      subtitle: `${stats.total_skus} Total Active SKUs`,
+      subtitle: `${stats.total_skus} Catalog SKUs`,
       icon: <Wallet size={18} />,
       iconContainer: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
       pillClass: 'badge-info',
       dotClass: 'bg-blue-500',
-      pillText: 'Active Stock'
+      pillText: 'Book Value'
     },
     {
-      title: 'In Stock Items',
+      title: 'Physical Units On Hand',
+      value: (stats.total_units || 0).toLocaleString('en-IN'),
+      subtitle: `Across ${stats.categories?.length || 0} categories`,
+      icon: <Boxes size={18} />,
+      iconContainer: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+      pillClass: 'badge-purple',
+      dotClass: 'bg-purple-500',
+      pillText: 'Total Units'
+    },
+    {
+      title: 'In Stock SKUs',
       value: stats.in_stock_count,
       subtitle: 'Healthy inventory levels',
       icon: <CheckCircle2 size={18} />,
@@ -43,7 +53,7 @@ export const InventoryStatsCards: React.FC<Props> = ({ stats }) => {
     {
       title: 'Out of Stock Items',
       value: stats.out_of_stock_count,
-      subtitle: 'Requires immediate restock',
+      subtitle: 'Zero inventory on hand',
       icon: <AlertOctagon size={18} />,
       iconContainer: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
       pillClass: stats.out_of_stock_count > 0 ? 'badge-danger' : 'badge-neutral',
@@ -53,7 +63,7 @@ export const InventoryStatsCards: React.FC<Props> = ({ stats }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       {cards.map((c) => (
         <div
           key={c.title}

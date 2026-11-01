@@ -55,6 +55,7 @@ export interface PaginatedMovementsResponse {
 export interface InventoryStats {
   total_skus: number;
   total_stock_value: number;
+  total_units?: number;
   in_stock_count: number;
   low_stock_count: number;
   out_of_stock_count: number;
@@ -106,3 +107,74 @@ export interface StockAdjustmentPayload {
   reference_order?: string;
   user_name?: string;
 }
+
+export interface SalesKPIs {
+  today_revenue: number;
+  today_orders: number;
+  total_revenue: number;
+  total_orders: number;
+  aov: number;
+  total_units_sold: number;
+}
+
+export interface SalesTrendPoint {
+  name: string;
+  day: string;
+  full_date: string;
+  revenue: number;
+  orders: number;
+  units: number;
+}
+
+export interface TopProduct {
+  id: number;
+  name: string;
+  sku: string;
+  category: string;
+  units_sold: number;
+  revenue: number;
+}
+
+export interface PaymentDistributionItem {
+  name: string;
+  count: number;
+  value: number;
+}
+
+export interface CategorySalesItem {
+  category: string;
+  units_sold: number;
+  revenue: number;
+}
+
+export interface RecentTransaction {
+  id: number;
+  order_number: string;
+  customer_name: string;
+  user_name: string;
+  created_at: string;
+  total_amount: number;
+  payment_method: string;
+  payment_status: string;
+  status: string;
+  items_count: number;
+  items_summary: string;
+}
+
+export interface DashboardAnalytics {
+  sales_kpis: SalesKPIs;
+  stock_value: number;
+  total_skus: number;
+  in_stock_count: number;
+  low_stock_count: number;
+  out_of_stock_count: number;
+  critical_alert_count: number;
+  sales_trend: SalesTrendPoint[];
+  top_products: TopProduct[];
+  payment_distribution: PaymentDistributionItem[];
+  category_sales: CategorySalesItem[];
+  category_distribution: { name: string; value: number }[];
+  recent_transactions: RecentTransaction[];
+  replenishment_alerts: InventoryItem[];
+}
+

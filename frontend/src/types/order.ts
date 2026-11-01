@@ -49,6 +49,11 @@ export interface OrderStats {
   cancelled_count: number;
   today_orders: number;
   today_revenue: number;
+  aov: number;
+  today_aov: number;
+  paid_count: number;
+  unpaid_count: number;
+  total_units_sold: number;
   pending_count?: number;
   confirmed_count?: number;
   dispatched_count?: number;

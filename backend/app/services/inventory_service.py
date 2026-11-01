@@ -481,6 +481,7 @@ def get_inventory_stats(db: Session):
     items = db.query(Inventory).all()
     total_skus = len(items)
     total_stock_value = sum(calculate_stock_value(item) for item in items if item.is_active)
+    total_units = sum(item.quantity for item in items if item.is_active)
     
     in_stock_count = 0
     low_stock_count = 0
@@ -504,6 +505,7 @@ def get_inventory_stats(db: Session):
     return {
         "total_skus": total_skus,
         "total_stock_value": round(total_stock_value, 2),
+        "total_units": total_units,
         "in_stock_count": in_stock_count,
         "low_stock_count": low_stock_count,
         "out_of_stock_count": out_of_stock_count,

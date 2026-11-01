@@ -9,7 +9,8 @@ import type {
   StockInPayload,
   StockOutPayload,
   StockAdjustmentPayload,
-  StockMovement
+  StockMovement,
+  DashboardAnalytics
 } from '../types/inventory';
 
 
@@ -109,9 +110,9 @@ export const inventoryApi = {
     return res.data;
   },
 
-  // Dashboard Live Stats
-  getDashboardStats: async () => {
-    const res = await apiClient.get('/dashboard/');
+  // Dashboard Live Stats & Sales Analytics
+  getDashboardStats: async (): Promise<DashboardAnalytics> => {
+    const res = await apiClient.get<DashboardAnalytics>('/dashboard/');
     return res.data;
   }
 };

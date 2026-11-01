@@ -4,7 +4,7 @@ import { useToast } from '../context/ToastContext';
 import { inventoryApi } from '../services/inventoryApi';
 import { orderApi } from '../services/orderApi';
 import type { InventoryItem } from '../types/inventory';
-import type { Customer, Order, OrderCreatePayload } from '../types/order';
+import type { Customer, Order, OrderCreatePayload, OrderStats } from '../types/order';
 import { InvoiceModal } from '../components/orders/InvoiceModal';
 import {
   Store,
@@ -71,6 +71,7 @@ export const WalkInOrder: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [orderStats, setOrderStats] = useState<OrderStats | null>(null);
 
   // Load Inventory dynamically from DB
   const loadInventory = useCallback(async () => {
@@ -97,10 +98,21 @@ export const WalkInOrder: React.FC = () => {
     }
   }, []);
 
+  // Load POS Shift KPIs
+  const loadOrderStats = useCallback(async () => {
+    try {
+      const stats = await orderApi.getOrderStats();
+      setOrderStats(stats);
+    } catch (err) {
+      console.warn('Shift stats not loaded', err);
+    }
+  }, []);
+
   useEffect(() => {
     loadInventory();
     loadCustomers();
-  }, [loadInventory, loadCustomers]);
+    loadOrderStats();
+  }, [loadInventory, loadCustomers, loadOrderStats]);
 
   // Unique categories derived dynamically from DB items
   const categories = useMemo(() => {
@@ -259,6 +271,7 @@ export const WalkInOrder: React.FC = () => {
       // Reset cart and reload inventory live to reflect updated quantities
       handleClearCart();
       loadInventory();
+      loadOrderStats();
     } catch (err: any) {
       console.error(err);
       const detail = err.response?.data?.detail || 'Failed to complete counter sale';
@@ -306,6 +319,120 @@ export const WalkInOrder: React.FC = () => {
             <span>All Sales Orders</span>
             <ArrowRight size={13} />
           </Link>
+        </div>
+      </div>
+
+      {/* POS Shift Operational KPIs */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        {/* Shift Revenue Collected */}
+        <div className="card-base p-4 flex flex-col justify-between group hover:border-emerald-300 dark:hover:border-emerald-800 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+              Today's POS Intake
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+              <Banknote size={16} />
+            </div>
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              ₹{Math.round(orderStats?.today_revenue || 0).toLocaleString('en-IN')}
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/70 text-[11px]">
+              <span className="text-slate-500">{orderStats?.today_orders || 0} sales closed</span>
+              <span className="badge-success text-[10px] py-0 px-1.5 font-bold">Shift Total</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Counter Checkouts */}
+        <div className="card-base p-4 flex flex-col justify-between group hover:border-indigo-300 dark:hover:border-indigo-800 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
+              Counter Checkouts
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+              <Store size={16} />
+            </div>
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              {orderStats?.today_orders || 0}
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/70 text-[11px]">
+              <span className="text-slate-500">Instant stock sync</span>
+              <span className="badge-purple text-[10px] py-0 px-1.5 font-bold">Walk-in</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Shift AOV */}
+        <div className="card-base p-4 flex flex-col justify-between group hover:border-purple-300 dark:hover:border-purple-800 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Shift Avg Basket
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center">
+              <ShoppingBag size={16} />
+            </div>
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              ₹{Math.round(orderStats?.today_aov || 0).toLocaleString('en-IN')}
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/70 text-[11px]">
+              <span className="text-slate-500">Per customer checkout</span>
+              <span className="badge-purple text-[10px] py-0 px-1.5 font-bold">AOV</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Catalog In-Stock */}
+        <div className="card-base p-4 flex flex-col justify-between group hover:border-blue-300 dark:hover:border-blue-800 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Available to Sell
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
+              <Package size={16} />
+            </div>
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              {inventoryList.filter(i => i.quantity > 0).length} SKUs
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/70 text-[11px]">
+              <span className="text-slate-500">{inventoryList.filter(i => i.quantity === 0).length} stockouts</span>
+              <span className="badge-info text-[10px] py-0 px-1.5 font-bold">Live Catalog</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Register Cart */}
+        <div className="card-base p-4 flex flex-col justify-between group hover:border-amber-300 dark:hover:border-amber-800 transition-all">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+              Active Cart Queue
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center">
+              <Receipt size={16} />
+            </div>
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
+              {cart.length} {cart.length === 1 ? 'Product' : 'Products'}
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/70 text-[11px]">
+              <span className="text-slate-500">{cart.reduce((a, b) => a + b.quantity, 0)} units in cart</span>
+              <span className={`text-[10px] py-0 px-1.5 font-bold rounded ${
+                cart.length > 0 
+                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' 
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+              }`}>
+                {cart.length > 0 ? 'Billing' : 'Idle'}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

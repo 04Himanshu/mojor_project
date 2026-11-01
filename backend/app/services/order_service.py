@@ -124,15 +124,20 @@ def get_order_stats(db: Session) -> dict:
     total_revenue = 0.0
     today_orders = 0
     today_revenue = 0.0
+    paid_count = 0
+    unpaid_count = 0
+    total_units_sold = 0
 
     today = date.today()
 
     for o in orders:
         st = (o.status or "").capitalize()
+        pay_st = (o.payment_status or "Paid").capitalize()
         is_today = o.created_at and o.created_at.date() == today
 
-        # Calculate line item total
+        # Calculate line item total and units
         sub = sum(float(item.quantity * item.price_at_time) for item in o.items)
+        units = sum(item.quantity for item in o.items)
         tax = sub * float(getattr(o, "tax_rate", 0.0) or 0.0)
         disc = float(getattr(o, "discount_amount", 0.0) or 0.0)
         order_total = max(0.0, sub + tax - disc)
@@ -142,9 +147,18 @@ def get_order_stats(db: Session) -> dict:
         else:
             completed_count += 1
             total_revenue += order_total
+            total_units_sold += units
+            if pay_st == "Paid":
+                paid_count += 1
+            else:
+                unpaid_count += 1
+
             if is_today:
                 today_orders += 1
                 today_revenue += order_total
+
+    aov = round(total_revenue / completed_count, 2) if completed_count > 0 else 0.0
+    today_aov = round(today_revenue / today_orders, 2) if today_orders > 0 else 0.0
 
     return {
         "total_orders": total_orders,
@@ -153,6 +167,11 @@ def get_order_stats(db: Session) -> dict:
         "cancelled_count": cancelled_count,
         "today_orders": today_orders,
         "today_revenue": round(today_revenue, 2),
+        "aov": aov,
+        "today_aov": today_aov,
+        "paid_count": paid_count,
+        "unpaid_count": unpaid_count,
+        "total_units_sold": total_units_sold,
         # Retain backward-compatible fields
         "pending_count": 0,
         "confirmed_count": completed_count,

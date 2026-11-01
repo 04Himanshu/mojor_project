@@ -93,6 +93,11 @@ class OrderStatsResponse(BaseModel):
     cancelled_count: int = 0
     today_orders: int = 0
     today_revenue: float = 0.0
+    aov: float = 0.0
+    today_aov: float = 0.0
+    paid_count: int = 0
+    unpaid_count: int = 0
+    total_units_sold: int = 0
     pending_count: int = 0
     confirmed_count: int = 0
     dispatched_count: int = 0

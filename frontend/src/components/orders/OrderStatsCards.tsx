@@ -9,56 +9,60 @@ interface Props {
 export const OrderStatsCards: React.FC<Props> = ({ stats }) => {
   if (!stats) return null;
 
+  const paidPercent = stats.total_orders > 0 
+    ? Math.round((stats.paid_count / stats.total_orders) * 100) 
+    : 100;
+
   const cards = [
     {
-      title: 'Total Revenue',
-      value: `₹${stats.total_revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`,
-      subtitle: `${stats.total_orders} Walk-in Orders`,
-      icon: <Wallet size={18} />,
+      title: 'Total Sales Orders',
+      value: stats.total_orders,
+      subtitle: `${stats.total_units_sold || 0} units dispensed`,
+      icon: <ShoppingBag size={18} />,
       iconContainer: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
       pillClass: 'badge-info',
       dotClass: 'bg-blue-500',
-      pillText: 'Gross Sales'
+      pillText: 'All Volume'
     },
     {
-      title: "Today's Revenue",
-      value: `₹${(stats.today_revenue || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`,
-      subtitle: `${stats.today_orders || 0} Sales Today`,
-      icon: <TrendingUp size={18} />,
-      iconContainer: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-      pillClass: 'badge-success',
-      dotClass: 'bg-emerald-500',
-      pillText: 'Active Shift'
-    },
-    {
-      title: "Today's Orders",
+      title: "Today's Shift Orders",
       value: stats.today_orders || 0,
-      subtitle: 'Customers served today',
+      subtitle: `₹${Math.round(stats.today_revenue || 0).toLocaleString('en-IN')} taken today`,
       icon: <Store size={18} />,
       iconContainer: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
       pillClass: 'badge-purple',
       dotClass: 'bg-indigo-500',
-      pillText: 'Counter'
+      pillText: 'Active Shift'
     },
     {
-      title: 'Completed Sales',
-      value: stats.completed_count,
-      subtitle: 'Successful checkouts',
+      title: 'Avg Order Basket (AOV)',
+      value: `₹${Math.round(stats.aov || 0).toLocaleString('en-IN')}`,
+      subtitle: stats.today_orders > 0 ? `₹${Math.round(stats.today_aov || 0).toLocaleString('en-IN')} today's avg` : 'Per checkout basket',
+      icon: <TrendingUp size={18} />,
+      iconContainer: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+      pillClass: 'badge-success',
+      dotClass: 'bg-emerald-500',
+      pillText: 'Basket Spend'
+    },
+    {
+      title: 'Payment Settlement',
+      value: `${stats.paid_count || stats.completed_count} Paid`,
+      subtitle: stats.unpaid_count > 0 ? `${stats.unpaid_count} pending settlement` : '100% counter settlement',
       icon: <CheckCircle2 size={18} />,
       iconContainer: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20',
       pillClass: 'badge-success',
       dotClass: 'bg-teal-500',
-      pillText: 'Stock Deducted'
+      pillText: `${paidPercent}% Settled`
     },
     {
-      title: 'Total Orders',
-      value: stats.total_orders,
-      subtitle: stats.cancelled_count > 0 ? `${stats.cancelled_count} voided/cancelled` : 'All time counter volume',
-      icon: <ShoppingBag size={18} />,
-      iconContainer: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
+      title: 'Total Gross Billings',
+      value: `₹${Math.round(stats.total_revenue).toLocaleString('en-IN')}`,
+      subtitle: `${stats.completed_count} completed checkouts`,
+      icon: <Wallet size={18} />,
+      iconContainer: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20',
       pillClass: 'badge-neutral',
-      dotClass: 'bg-slate-400',
-      pillText: 'All Volume'
+      dotClass: 'bg-slate-500',
+      pillText: 'Realized Sales'
     }
   ];
 
