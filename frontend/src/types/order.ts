@@ -1,6 +1,6 @@
-export type OrderStatus = 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered' | 'Cancelled';
-export type PaymentStatus = 'Unpaid' | 'Paid' | 'Partially Paid' | 'Refunded';
-export type PaymentMethod = 'Cash' | 'Card' | 'Bank Transfer' | 'UPI' | 'Credit Net 30';
+export type OrderStatus = 'Completed' | 'Cancelled' | 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered';
+export type PaymentStatus = 'Paid' | 'Unpaid' | 'Partially Paid' | 'Refunded';
+export type PaymentMethod = 'Cash' | 'Card' | 'UPI' | 'Bank Transfer' | 'Credit Net 30';
 
 export interface OrderItem {
   id: number;
@@ -45,11 +45,14 @@ export interface Order {
 export interface OrderStats {
   total_orders: number;
   total_revenue: number;
-  pending_count: number;
-  confirmed_count: number;
-  dispatched_count: number;
-  delivered_count: number;
+  completed_count: number;
   cancelled_count: number;
+  today_orders: number;
+  today_revenue: number;
+  pending_count?: number;
+  confirmed_count?: number;
+  dispatched_count?: number;
+  delivered_count?: number;
 }
 
 export interface OrderCreatePayload {
@@ -87,6 +90,7 @@ export interface InvoiceData {
   customer_email?: string;
   customer_phone?: string;
   shipping_address?: string;
+  user_name?: string;
   status: OrderStatus;
   payment_status: PaymentStatus;
   payment_method: PaymentMethod;

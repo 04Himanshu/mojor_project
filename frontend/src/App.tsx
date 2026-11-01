@@ -3,6 +3,7 @@ import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Orders from './pages/Orders';
+import WalkInOrder from './pages/WalkInOrder';
 import Vendors from './pages/Vendors';
 import UsersPage from './pages/Users';
 import Login from './pages/Login';
@@ -23,6 +24,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Dashboard />} />
+                <Route path="walk-in-order" element={<WalkInOrder />} />
                 <Route path="inventory" element={<Inventory />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="vendors" element={<Vendors />} />

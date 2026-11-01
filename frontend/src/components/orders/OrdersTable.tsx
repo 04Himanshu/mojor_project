@@ -5,12 +5,11 @@ import {
   FileText, 
   Search, 
   CheckCircle2, 
-  Clock, 
-  Truck, 
-  CheckCheck, 
   XCircle, 
   AlertCircle,
-  PackageCheck,
+  Clock,
+  Store,
+  User
 } from 'lucide-react';
 
 interface Props {
@@ -24,16 +23,12 @@ interface Props {
   onPaymentFilterChange: (payment: string) => void;
   onViewOrder: (order: Order) => void;
   onOpenInvoice: (order: Order) => void;
-  onStatusChangeQuick?: (order: Order, newStatus: OrderStatus) => void;
 }
 
 const STATUS_TABS = [
-  { id: 'ALL', label: 'All Orders' },
-  { id: 'Pending', label: 'Pending' },
-  { id: 'Confirmed', label: 'Confirmed' },
-  { id: 'Dispatched', label: 'Dispatched' },
-  { id: 'Delivered', label: 'Delivered' },
-  { id: 'Cancelled', label: 'Cancelled' },
+  { id: 'ALL', label: 'All Sales Orders' },
+  { id: 'Completed', label: 'Completed Sales' },
+  { id: 'Cancelled', label: 'Cancelled / Voided' },
 ];
 
 export const OrdersTable: React.FC<Props> = ({
@@ -50,43 +45,29 @@ export const OrdersTable: React.FC<Props> = ({
 }) => {
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
-      case 'Pending':
-        return (
-          <span className="badge-warning">
-            <Clock size={12} />
-            Pending
-          </span>
-        );
+      case 'Completed':
       case 'Confirmed':
-        return (
-          <span className="badge-purple">
-            <CheckCircle2 size={12} />
-            Confirmed
-          </span>
-        );
-      case 'Dispatched':
-        return (
-          <span className="badge-info">
-            <Truck size={12} />
-            Dispatched
-          </span>
-        );
       case 'Delivered':
         return (
-          <span className="badge-success">
-            <CheckCheck size={12} />
-            Delivered
+          <span className="badge-success text-[11px] py-0.5 px-2.5">
+            <CheckCircle2 size={12} />
+            Completed
           </span>
         );
       case 'Cancelled':
         return (
-          <span className="badge-danger">
+          <span className="badge-danger text-[11px] py-0.5 px-2.5">
             <XCircle size={12} />
             Cancelled
           </span>
         );
       default:
-        return null;
+        return (
+          <span className="badge-warning text-[11px] py-0.5 px-2.5">
+            <Clock size={12} />
+            {status}
+          </span>
+        );
     }
   };
 
@@ -148,8 +129,8 @@ export const OrdersTable: React.FC<Props> = ({
               type="text"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search by order number, customer, or items..."
-              className="input-base pl-9"
+              placeholder="Search by Order #, customer, staff, or product..."
+              className="input-base pl-9 text-xs"
             />
           </div>
 
@@ -158,7 +139,7 @@ export const OrdersTable: React.FC<Props> = ({
               value={paymentFilter}
               onChange={(e) => onPaymentFilterChange(e.target.value)}
               aria-label="Filter orders by payment status"
-              className="select-base w-44"
+              className="select-base w-44 text-xs"
             >
               <option value="ALL">Payment: All</option>
               <option value="Paid">Paid Only</option>
@@ -175,13 +156,13 @@ export const OrdersTable: React.FC<Props> = ({
           <thead>
             <tr>
               <th className="table-th whitespace-nowrap">Order Number</th>
-              <th className="table-th min-w-[200px] whitespace-nowrap">Customer</th>
-              <th className="table-th min-w-[110px] whitespace-nowrap">Date</th>
-              <th className="table-th min-w-[220px] whitespace-nowrap">Items Ordered</th>
-              <th className="table-th text-right whitespace-nowrap">Total Amount</th>
+              <th className="table-th min-w-[190px] whitespace-nowrap">Customer</th>
+              <th className="table-th min-w-[120px] whitespace-nowrap">Date & Time</th>
+              <th className="table-th min-w-[220px] whitespace-nowrap">Items Purchased</th>
+              <th className="table-th text-right whitespace-nowrap">Total Paid</th>
               <th className="table-th text-center whitespace-nowrap">Payment</th>
-              <th className="table-th text-center whitespace-nowrap">Stock Allocation</th>
-              <th className="table-th text-center whitespace-nowrap">Order Status</th>
+              <th className="table-th min-w-[130px] whitespace-nowrap">Served By</th>
+              <th className="table-th text-center whitespace-nowrap">Sale Status</th>
               <th className="table-th text-right whitespace-nowrap">Actions</th>
             </tr>
           </thead>
@@ -191,7 +172,7 @@ export const OrdersTable: React.FC<Props> = ({
                 <td colSpan={9} className="py-14 text-center text-slate-400">
                   <div className="inline-flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    <span>Loading orders...</span>
+                    <span>Loading counter orders...</span>
                   </div>
                 </td>
               </tr>
@@ -199,8 +180,8 @@ export const OrdersTable: React.FC<Props> = ({
               <tr>
                 <td colSpan={9} className="py-14 text-center">
                   <AlertCircle size={30} className="mx-auto text-slate-300 dark:text-slate-600 mb-2" />
-                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No orders found</p>
-                  <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or create a new sales order.</p>
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No counter sales found</p>
+                  <p className="text-xs text-slate-400 mt-1">Create a new walk-in sale or adjust your search filter.</p>
                 </td>
               </tr>
             ) : (
@@ -217,31 +198,40 @@ export const OrdersTable: React.FC<Props> = ({
                   </td>
 
                   {/* Customer */}
-                  <td className="table-td min-w-[200px] whitespace-nowrap">
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 whitespace-nowrap" title={order.customer_name}>
-                      {order.customer_name}
+                  <td className="table-td min-w-[190px] whitespace-nowrap">
+                    <div className="font-semibold text-slate-900 dark:text-slate-100 whitespace-nowrap flex items-center gap-1.5" title={order.customer_name}>
+                      <User size={13} className="text-slate-400 shrink-0" />
+                      <span>{order.customer_name}</span>
                     </div>
                     {order.customer_phone && (
-                      <div className="text-[11px] text-slate-400 font-mono whitespace-nowrap mt-0.5">
+                      <div className="text-[11px] text-slate-400 font-mono whitespace-nowrap ml-4.5 mt-0.5">
                         {order.customer_phone}
                       </div>
                     )}
                   </td>
 
-                  {/* Date */}
-                  <td className="table-td whitespace-nowrap text-slate-500 font-mono">
+                  {/* Date & Time */}
+                  <td className="table-td whitespace-nowrap text-slate-500 font-mono text-[11px]">
                     {new Date(order.created_at).toLocaleDateString('en-IN', {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric'
                     })}
+                    <span className="block text-slate-400 text-[10px]">
+                      {new Date(order.created_at).toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
                   </td>
 
                   {/* Items summary */}
                   <td className="table-td max-w-xs">
                     <div className="truncate font-medium text-slate-800 dark:text-slate-200">
-                      {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
-                      <span className="text-slate-400 text-[11px] ml-1">
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">
+                        {order.items.reduce((acc, i) => acc + i.quantity, 0)} pcs
+                      </span>
+                      <span className="text-slate-400 text-[11px] ml-1.5">
                         ({order.items.map((i) => `${i.quantity}x ${i.item_name || 'Item'}`).join(', ')})
                       </span>
                     </div>
@@ -260,22 +250,15 @@ export const OrdersTable: React.FC<Props> = ({
                     </span>
                   </td>
 
-                  {/* Stock Deduction Status */}
-                  <td className="table-td text-center whitespace-nowrap">
-                    {order.stock_deducted ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                        <PackageCheck size={13} />
-                        Deducted
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-slate-400 font-medium">
-                        <Clock size={13} />
-                        Queued
-                      </span>
-                    )}
+                  {/* Staff Cashier */}
+                  <td className="table-td whitespace-nowrap text-slate-600 dark:text-slate-300">
+                    <div className="flex items-center gap-1.5">
+                      <Store size={12} className="text-slate-400" />
+                      <span className="font-medium">{order.user_name}</span>
+                    </div>
                   </td>
 
-                  {/* Order Status */}
+                  {/* Sale Status */}
                   <td className="table-td text-center whitespace-nowrap">
                     {getStatusBadge(order.status)}
                   </td>
@@ -286,16 +269,16 @@ export const OrdersTable: React.FC<Props> = ({
                       {/* View Details */}
                       <button
                         onClick={() => onViewOrder(order)}
-                        title="View Order Details"
+                        title="View Sale Details"
                         className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors cursor-pointer"
                       >
                         <Eye size={15} />
                       </button>
 
-                      {/* Invoice */}
+                      {/* Receipt */}
                       <button
                         onClick={() => onOpenInvoice(order)}
-                        title="View & Print Official Invoice"
+                        title="View & Print Official Receipt"
                         className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-lg transition-colors cursor-pointer"
                       >
                         <FileText size={15} />

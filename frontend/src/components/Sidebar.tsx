@@ -6,6 +6,7 @@ import {
   ShoppingCart,
   Building2,
   ShieldCheck,
+  Store,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +18,7 @@ const Sidebar: React.FC = () => {
 
   const operationsLinks = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={17} /> },
+    { name: 'Walk-in Order', path: '/walk-in-order', icon: <Store size={17} />, badge: 'POS' },
     { name: 'Inventory', path: '/inventory', icon: <PackageSearch size={17} /> },
     { name: 'Orders', path: '/orders', icon: <ShoppingCart size={17} /> },
     { name: 'Vendors', path: '/vendors', icon: <Building2 size={17} /> },
@@ -44,6 +46,11 @@ const Sidebar: React.FC = () => {
             {item.icon}
           </span>
           <span className="flex-1 tracking-tight">{item.name}</span>
+          {item.badge && !isActive && (
+            <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-purple-500/15 text-purple-400 border border-purple-500/25 rounded-md">
+              {item.badge}
+            </span>
+          )}
           {isActive && (
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500 animate-pulse" />
           )}

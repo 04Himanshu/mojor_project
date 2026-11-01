@@ -322,15 +322,16 @@ def run_suite():
     orders_list = http_req(f"{API_URL}/orders/")
     log_test("Orders", "GET /orders/", not is_error(orders_list) and isinstance(orders_list, list), f"Found {len(orders_list)} existing orders")
 
-    # Create Sales Order using the test customer and test inventory item
+    # Create Walk-in Sales Order using the test customer and test inventory item
     order_payload = {
         "customer_id": test_cust_id,
-        "shipping_address": "Floor 7, Cyber City, Gurugram, India",
-        "payment_status": "Unpaid",
-        "payment_method": "Net Banking",
+        "customer_name": "Walk-in Customer Test",
+        "shipping_address": "In-Store Counter Handover",
+        "payment_status": "Paid",
+        "payment_method": "Cash",
         "tax_rate": 0.18,
         "discount_amount": 100.0,
-        "notes": "Automated regression test sales order",
+        "notes": "Automated regression test walk-in counter sale",
         "items": [
             {
                 "inventory_id": test_item_id,
@@ -340,40 +341,21 @@ def run_suite():
     }
     create_ord_res = http_req(f"{API_URL}/orders/", method="POST", data=order_payload, headers={"X-User-Role": "Admin", "X-User-Name": "Himanshu Singh"})
     test_order_id = get_field(create_ord_res, "id")
-    log_test("Orders", "POST /orders/ (Create Order in 'Pending' state)", bool(test_order_id), f"Created Order ID: {test_order_id} ({get_field(create_ord_res, 'order_number')})")
+    log_test("Orders", "POST /orders/ (Create Walk-in Counter Sale)", bool(test_order_id), f"Created Order ID: {test_order_id} ({get_field(create_ord_res, 'order_number')})")
 
     ord2_id = None
     if test_order_id:
         # GET single order
         single_ord = http_req(f"{API_URL}/orders/{test_order_id}")
-        log_test("Orders", f"GET /orders/{test_order_id}", not is_error(single_ord) and get_field(single_ord, "status") == "Pending")
+        log_test("Orders", f"GET /orders/{test_order_id}", not is_error(single_ord) and get_field(single_ord, "status") == "Completed")
 
         # GET invoice
         invoice = http_req(f"{API_URL}/orders/{test_order_id}/invoice")
         log_test("Orders", f"GET /orders/{test_order_id}/invoice", not is_error(invoice) and "invoice_number" in invoice, f"Invoice #: {get_field(invoice, 'invoice_number')}, Total: INR {get_field(invoice, 'total_amount')}")
 
-        # Transition Pending -> Confirmed (Deducts 10 units from test item: 60 -> 50)
-        confirm_ord = http_req(f"{API_URL}/orders/{test_order_id}/status", method="PUT", data={
-            "status": "Confirmed",
-            "payment_status": "Paid"
-        }, headers={"X-User-Role": "Admin", "X-User-Name": "Himanshu Singh"})
-        log_test("Orders", f"PUT /orders/{test_order_id}/status (Pending -> Confirmed)", not is_error(confirm_ord) and get_field(confirm_ord, "status") == "Confirmed")
-
-        # Verify stock deducted: 60 - 10 = 50
-        inv_after_confirm = http_req(f"{API_URL}/inventory/{test_item_id}")
-        log_test("Orders", "Verify Inventory Decremented on Order Confirmation", not is_error(inv_after_confirm) and get_field(inv_after_confirm, "quantity") == 50, f"Quantity was 60 -> now {get_field(inv_after_confirm, 'quantity')}")
-
-        # Transition Confirmed -> Dispatched
-        dispatch_ord = http_req(f"{API_URL}/orders/{test_order_id}/status", method="PUT", data={
-            "status": "Dispatched"
-        }, headers={"X-User-Role": "Admin", "X-User-Name": "Himanshu Singh"})
-        log_test("Orders", f"PUT /orders/{test_order_id}/status (Confirmed -> Dispatched)", not is_error(dispatch_ord) and get_field(dispatch_ord, "status") == "Dispatched")
-
-        # Transition Dispatched -> Delivered
-        deliver_ord = http_req(f"{API_URL}/orders/{test_order_id}/status", method="PUT", data={
-            "status": "Delivered"
-        }, headers={"X-User-Role": "Admin", "X-User-Name": "Himanshu Singh"})
-        log_test("Orders", f"PUT /orders/{test_order_id}/status (Dispatched -> Delivered)", not is_error(deliver_ord) and get_field(deliver_ord, "status") == "Delivered")
+        # Verify stock deducted immediately upon creation: 60 - 10 = 50
+        inv_after_create = http_req(f"{API_URL}/inventory/{test_item_id}")
+        log_test("Orders", "Verify Inventory Decremented on Counter Sale Creation", not is_error(inv_after_create) and get_field(inv_after_create, "quantity") == 50, f"Quantity was 60 -> now {get_field(inv_after_create, 'quantity')}")
 
         # Test Order Cancellation Stock Restoration:
         # Create second order to cancel and test restoration
@@ -384,8 +366,9 @@ def run_suite():
         ord2_id = get_field(ord2_res, "id")
 
         if ord2_id:
-            # Confirm ord2 (stock 50 -> 45)
-            http_req(f"{API_URL}/orders/{ord2_id}/status", method="PUT", data={"status": "Confirmed"}, headers={"X-User-Role": "Admin", "X-User-Name": "Himanshu Singh"})
+            # Stock is now 50 - 5 = 45
+            inv_after_ord2 = http_req(f"{API_URL}/inventory/{test_item_id}")
+            log_test("Orders", "Second Walk-in Sale Deducts Stock", not is_error(inv_after_ord2) and get_field(inv_after_ord2, "quantity") == 45, f"Quantity was 50 -> now {get_field(inv_after_ord2, 'quantity')}")
             # Cancel ord2 (stock restored 45 -> 50)
             cancel_ord = http_req(f"{API_URL}/orders/{ord2_id}/status", method="PUT", data={"status": "Cancelled"}, headers={"X-User-Role": "Admin", "X-User-Name": "Himanshu Singh"})
             inv_after_cancel = http_req(f"{API_URL}/inventory/{test_item_id}")

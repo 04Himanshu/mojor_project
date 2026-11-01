@@ -14,6 +14,7 @@ from app.schemas.inventory import (
     PaginatedMovementsResponse,
     InventorySummaryStats
 )
+from app.models.inventory import Inventory
 from app.services import inventory_service
 from typing import List, Optional
 
@@ -27,7 +28,7 @@ def list_inventory(
     sort_by: str = Query("id", description="Field to sort by (name, sku, category, quantity, unit_price, stock_value, status, created_at)"),
     sort_order: str = Query("desc", description="Sort order: asc or desc"),
     page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1, le=100),
+    page_size: int = Query(10, ge=1, le=1000),
     db: Session = Depends(get_db),
     auth: dict = Depends(require_permission("inventory:view"))
 ):
@@ -85,6 +86,15 @@ def get_all_stock_movements(
         page=page,
         page_size=page_size
     )
+
+@router.get("/lookup", response_model=List[InventoryResponse])
+def get_inventory_lookup(
+    db: Session = Depends(get_db),
+    auth: dict = Depends(require_permission("inventory:view"))
+):
+    """Retrieve all active inventory items dynamically from the database for counter sales and ordering."""
+    items = db.query(Inventory).filter(Inventory.is_active == True).order_by(Inventory.name.asc()).all()
+    return [inventory_service.serialize_item(item) for item in items]
 
 @router.get("/{item_id}", response_model=InventoryResponse)
 def get_inventory_item(

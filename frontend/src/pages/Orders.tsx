@@ -7,7 +7,7 @@ import { CreateOrderModal } from '../components/orders/CreateOrderModal';
 import { OrderDetailsModal } from '../components/orders/OrderDetailsModal';
 import { InvoiceModal } from '../components/orders/InvoiceModal';
 import { useToast } from '../context/ToastContext';
-import { Plus, RefreshCw, ShoppingCart } from 'lucide-react';
+import { Plus, RefreshCw, Store } from 'lucide-react';
 
 export const Orders: React.FC = () => {
   const { toast } = useToast();
@@ -29,9 +29,9 @@ export const Orders: React.FC = () => {
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'error') {
-      toast.error(message, 'Order Notice');
+      toast.error(message, 'Counter Sale Notice');
     } else {
-      toast.success(message, 'Order Notice');
+      toast.success(message, 'Counter Sale Notice');
     }
   };
 
@@ -46,7 +46,7 @@ export const Orders: React.FC = () => {
       setOrders(data);
     } catch (err) {
       console.error(err);
-      showNotification('Unable to load orders. Please check your connection.', 'error');
+      showNotification('Unable to load counter orders. Please check your connection.', 'error');
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export const Orders: React.FC = () => {
       const data = await orderApi.getOrderStats();
       setStats(data);
     } catch (err) {
-      console.error('Failed to load stats', err);
+      console.error('Failed to load counter stats', err);
     }
   };
 
@@ -72,7 +72,7 @@ export const Orders: React.FC = () => {
   const handleRefresh = () => {
     loadOrders();
     loadStats();
-    showNotification('Order records refreshed successfully!');
+    showNotification('Counter sales records refreshed successfully!');
   };
 
   const handleViewOrder = (order: Order) => {
@@ -91,11 +91,11 @@ export const Orders: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-            <ShoppingCart className="text-blue-600 dark:text-blue-400" size={24} />
-            <span>Order Management</span>
+            <Store className="text-blue-600 dark:text-blue-400" size={26} />
+            <span>Walk-in Sales & Orders</span>
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Sales order processing, multi-item allocation, real-time stock deduction, and tax invoices
+            Point of sale counter orders, multi-item checkout, instant stock deduction, and official sales receipts
           </p>
         </div>
 
@@ -112,8 +112,8 @@ export const Orders: React.FC = () => {
             onClick={() => setIsCreateModalOpen(true)}
             className="btn-primary"
           >
-            <Plus size={15} />
-            <span>Create Sales Order</span>
+            <Plus size={16} />
+            <span>New Walk-in Sale</span>
           </button>
         </div>
       </div>
@@ -121,7 +121,7 @@ export const Orders: React.FC = () => {
       {/* KPI Metric Cards */}
       <OrderStatsCards stats={stats} />
 
-      {/* Original Integrated Orders Table */}
+      {/* Orders Table */}
       <OrdersTable
         orders={orders}
         loading={loading}
@@ -135,7 +135,7 @@ export const Orders: React.FC = () => {
         onOpenInvoice={handleOpenInvoice}
       />
 
-      {/* Modals with Inventory Matching Overlays & Animations */}
+      {/* Modals */}
       <CreateOrderModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

@@ -14,6 +14,19 @@ import type {
 
 
 export const inventoryApi = {
+  // Dynamic lookup of all active items for sales orders & POS
+  getLookupItems: async (): Promise<InventoryItem[]> => {
+    try {
+      const res = await apiClient.get<InventoryItem[]>('/inventory/lookup');
+      return res.data;
+    } catch {
+      const res = await apiClient.get<PaginatedInventoryResponse>('/inventory/', {
+        params: { page_size: 100 }
+      });
+      return res.data.items;
+    }
+  },
+
   // 1. Inventory List
   getItems: async (params?: {
     search?: string;

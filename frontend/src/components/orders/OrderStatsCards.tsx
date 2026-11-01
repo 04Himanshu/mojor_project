@@ -1,6 +1,6 @@
 import React from 'react';
 import type { OrderStats } from '../../types/order';
-import { Wallet, Clock, CheckCircle2, Truck, CheckCheck } from 'lucide-react';
+import { Wallet, Store, ShoppingBag, CheckCircle2, TrendingUp } from 'lucide-react';
 
 interface Props {
   stats: OrderStats | null;
@@ -13,7 +13,7 @@ export const OrderStatsCards: React.FC<Props> = ({ stats }) => {
     {
       title: 'Total Revenue',
       value: `₹${stats.total_revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`,
-      subtitle: `${stats.total_orders} Orders Placed`,
+      subtitle: `${stats.total_orders} Walk-in Orders`,
       icon: <Wallet size={18} />,
       iconContainer: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
       pillClass: 'badge-info',
@@ -21,44 +21,44 @@ export const OrderStatsCards: React.FC<Props> = ({ stats }) => {
       pillText: 'Gross Sales'
     },
     {
-      title: 'Pending Orders',
-      value: stats.pending_count,
-      subtitle: 'Awaiting confirmation',
-      icon: <Clock size={18} />,
-      iconContainer: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-      pillClass: stats.pending_count > 0 ? 'badge-warning' : 'badge-neutral',
-      dotClass: stats.pending_count > 0 ? 'bg-amber-500 animate-pulse' : 'bg-slate-400',
-      pillText: stats.pending_count > 0 ? 'Action Needed' : 'All Clear'
-    },
-    {
-      title: 'Confirmed Orders',
-      value: stats.confirmed_count,
-      subtitle: 'Stock allocated',
-      icon: <CheckCircle2 size={18} />,
-      iconContainer: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
-      pillClass: 'badge-purple',
-      dotClass: 'bg-indigo-500',
-      pillText: 'Allocated'
-    },
-    {
-      title: 'Dispatched Orders',
-      value: stats.dispatched_count,
-      subtitle: 'Shipped to customer',
-      icon: <Truck size={18} />,
-      iconContainer: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
-      pillClass: stats.dispatched_count > 0 ? 'badge-info' : 'badge-neutral',
-      dotClass: stats.dispatched_count > 0 ? 'bg-sky-500' : 'bg-slate-400',
-      pillText: stats.dispatched_count > 0 ? 'En Route' : 'Idle'
-    },
-    {
-      title: 'Delivered Orders',
-      value: stats.delivered_count,
-      subtitle: 'Delivered to customer',
-      icon: <CheckCheck size={18} />,
+      title: "Today's Revenue",
+      value: `₹${(stats.today_revenue || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`,
+      subtitle: `${stats.today_orders || 0} Sales Today`,
+      icon: <TrendingUp size={18} />,
       iconContainer: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
       pillClass: 'badge-success',
       dotClass: 'bg-emerald-500',
-      pillText: 'Completed'
+      pillText: 'Active Shift'
+    },
+    {
+      title: "Today's Orders",
+      value: stats.today_orders || 0,
+      subtitle: 'Customers served today',
+      icon: <Store size={18} />,
+      iconContainer: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+      pillClass: 'badge-purple',
+      dotClass: 'bg-indigo-500',
+      pillText: 'Counter'
+    },
+    {
+      title: 'Completed Sales',
+      value: stats.completed_count,
+      subtitle: 'Successful checkouts',
+      icon: <CheckCircle2 size={18} />,
+      iconContainer: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20',
+      pillClass: 'badge-success',
+      dotClass: 'bg-teal-500',
+      pillText: 'Stock Deducted'
+    },
+    {
+      title: 'Total Orders',
+      value: stats.total_orders,
+      subtitle: stats.cancelled_count > 0 ? `${stats.cancelled_count} voided/cancelled` : 'All time counter volume',
+      icon: <ShoppingBag size={18} />,
+      iconContainer: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
+      pillClass: 'badge-neutral',
+      dotClass: 'bg-slate-400',
+      pillText: 'All Volume'
     }
   ];
 

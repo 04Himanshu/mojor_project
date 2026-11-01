@@ -2,9 +2,9 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import datetime
 
-VALID_ORDER_STATUSES = ["Pending", "Confirmed", "Dispatched", "Delivered", "Cancelled"]
-VALID_PAYMENT_STATUSES = ["Unpaid", "Paid", "Partially Paid", "Refunded"]
-VALID_PAYMENT_METHODS = ["Cash", "Card", "Bank Transfer", "UPI", "Credit Net 30"]
+VALID_ORDER_STATUSES = ["Completed", "Cancelled", "Pending", "Confirmed", "Dispatched", "Delivered"]
+VALID_PAYMENT_STATUSES = ["Paid", "Unpaid", "Partially Paid", "Refunded"]
+VALID_PAYMENT_METHODS = ["Cash", "Card", "UPI", "Bank Transfer", "Credit Net 30"]
 
 class OrderItemBase(BaseModel):
     inventory_id: int = Field(..., gt=0, description="Valid inventory ID required")
@@ -26,12 +26,12 @@ class OrderItemResponse(OrderItemBase):
 
 class OrderCreate(BaseModel):
     customer_id: Optional[int] = Field(None, description="Customer ID if selecting existing customer")
-    customer_name: Optional[str] = Field(None, description="Direct customer name if not selecting ID")
+    customer_name: Optional[str] = Field("Walk-in Customer", description="Customer name (defaults to Walk-in Customer)")
     customer_email: Optional[str] = None
     customer_phone: Optional[str] = None
-    shipping_address: Optional[str] = None
-    payment_status: Optional[str] = Field("Unpaid", description="Payment status: Unpaid, Paid, Partially Paid")
-    payment_method: Optional[str] = Field("Cash", description="Payment method: Cash, Card, Bank Transfer, UPI, Credit Net 30")
+    shipping_address: Optional[str] = Field("Counter Handover", description="Handover / Delivery location")
+    payment_status: Optional[str] = Field("Paid", description="Payment status: Paid, Unpaid, Partially Paid, Refunded")
+    payment_method: Optional[str] = Field("Cash", description="Payment method: Cash, Card, UPI, Bank Transfer, Credit Net 30")
     notes: Optional[str] = None
     tax_rate: Optional[float] = Field(0.0, ge=0.0, le=1.0, description="Tax rate, e.g. 0.18 for 18%")
     discount_amount: Optional[float] = Field(0.0, ge=0.0, description="Discount amount")
@@ -48,7 +48,7 @@ class OrderCreate(BaseModel):
         return v
 
 class OrderStatusUpdate(BaseModel):
-    status: str = Field(..., description="Target status: Pending, Confirmed, Dispatched, Delivered, Cancelled")
+    status: str = Field(..., description="Target status: Completed, Cancelled, Pending, Confirmed")
     payment_status: Optional[str] = None
     notes: Optional[str] = None
 
@@ -67,9 +67,9 @@ class OrderResponse(BaseModel):
     customer_name: Optional[str] = "Walk-in Customer"
     customer_email: Optional[str] = None
     customer_phone: Optional[str] = None
-    shipping_address: Optional[str] = None
+    shipping_address: Optional[str] = "Counter Handover"
     user_id: Optional[int] = None
-    user_name: Optional[str] = "Admin User"
+    user_name: Optional[str] = "Staff Member"
     created_at: datetime
     status: str
     stock_deducted: bool
@@ -89,11 +89,14 @@ class OrderResponse(BaseModel):
 class OrderStatsResponse(BaseModel):
     total_orders: int
     total_revenue: float
-    pending_count: int
-    confirmed_count: int
-    dispatched_count: int
-    delivered_count: int
-    cancelled_count: int
+    completed_count: int = 0
+    cancelled_count: int = 0
+    today_orders: int = 0
+    today_revenue: float = 0.0
+    pending_count: int = 0
+    confirmed_count: int = 0
+    dispatched_count: int = 0
+    delivered_count: int = 0
 
 class InvoiceDataResponse(BaseModel):
     invoice_number: str
@@ -109,7 +112,8 @@ class InvoiceDataResponse(BaseModel):
     customer_name: str
     customer_email: Optional[str] = None
     customer_phone: Optional[str] = None
-    shipping_address: Optional[str] = None
+    shipping_address: Optional[str] = "In-Store Counter Handover"
+    user_name: Optional[str] = "Staff Member"
     status: str
     payment_status: str
     payment_method: str

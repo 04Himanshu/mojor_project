@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { InvoiceData, Order } from '../../types/order';
 import { orderApi } from '../../services/orderApi';
-import { X, Printer, Receipt } from 'lucide-react';
+import { X, Printer, Receipt, Store } from 'lucide-react';
 
 interface Props {
   order: Order | null;
@@ -69,7 +69,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
             </div>
             <div>
               <span className="text-sm font-semibold text-slate-900 dark:text-white block">
-                Official Tax Invoice
+                Counter Sales Receipt & Tax Invoice
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                 {order.order_number}
@@ -80,14 +80,14 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5"
+              className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer"
             >
               <Printer size={14} />
-              <span>Print / Save PDF</span>
+              <span>Print / Save Receipt</span>
             </button>
             <button
               onClick={onClose}
-              className="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -99,11 +99,11 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
           {loading ? (
             <div className="py-24 text-center text-slate-400">
               <span className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin inline-block mb-2" />
-              <p className="text-xs">Generating tax invoice...</p>
+              <p className="text-xs">Generating sales receipt...</p>
             </div>
           ) : invoice ? (
-            <div className="space-y-8">
-              {/* Top Header & Company Info */}
+            <div className="space-y-6">
+              {/* Top Header & Store Info */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-slate-200">
                 <div>
                   <div className="flex items-center gap-2.5 mb-2">
@@ -127,17 +127,16 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
 
                 <div className="text-left sm:text-right">
                   <div className="text-xs font-bold uppercase tracking-widest text-blue-600">
-                    TAX INVOICE
+                    WALK-IN SALES RECEIPT
                   </div>
                   <div className="mt-1 font-mono font-bold text-base text-slate-900">
                     {invoice.invoice_number}
                   </div>
                   <div className="text-xs text-slate-500 mt-1">
-                    Invoice Date:{' '}
-                    {new Date(invoice.invoice_date).toLocaleDateString('en-IN', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
+                    Date & Time:{' '}
+                    {new Date(invoice.invoice_date).toLocaleString('en-IN', {
+                      dateStyle: 'medium',
+                      timeStyle: 'short'
                     })}
                   </div>
                   <div className="text-xs text-slate-500">
@@ -145,7 +144,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                   </div>
 
                   {/* Payment Stamp Badge */}
-                  <div className="mt-3">
+                  <div className="mt-2.5">
                     <span
                       className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
                         invoice.payment_status === 'Paid'
@@ -159,32 +158,34 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Bill To & Ship To Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 border-b border-slate-200">
+              {/* Customer & Cashier Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-200 text-xs">
                 <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                    Billed To:
-                  </div>
-                  <div className="text-sm font-bold text-slate-900">{invoice.customer_name}</div>
-                  {invoice.customer_email && (
-                    <div className="text-xs text-slate-600">{invoice.customer_email}</div>
-                  )}
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Customer:
+                  </span>
+                  <div className="font-bold text-slate-900 text-sm">{invoice.customer_name}</div>
                   {invoice.customer_phone && (
-                    <div className="text-xs text-slate-600">{invoice.customer_phone}</div>
+                    <div className="text-slate-600 font-mono mt-0.5">{invoice.customer_phone}</div>
+                  )}
+                  {invoice.customer_email && (
+                    <div className="text-slate-600 mt-0.5">{invoice.customer_email}</div>
                   )}
                 </div>
 
                 <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                    Shipping & Payment:
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Transaction Details:
+                  </span>
+                  <div className="text-slate-700 flex items-center gap-1.5">
+                    <Store size={13} className="text-blue-500" />
+                    <span>Cashier / Staff: <strong>{invoice.user_name || 'Staff Member'}</strong></span>
                   </div>
-                  <div className="text-xs text-slate-700">
-                    <span className="font-semibold text-slate-900">Delivery Address: </span>
-                    {invoice.shipping_address || 'Store Pickup / Direct Delivery'}
+                  <div className="text-slate-700 mt-1">
+                    Handover: <span>In-Store Counter Pickup</span>
                   </div>
-                  <div className="text-xs text-slate-700 mt-1">
-                    <span className="font-semibold text-slate-900">Payment Mode: </span>
-                    {invoice.payment_method}
+                  <div className="text-slate-700 mt-1">
+                    Payment Mode: <strong className="text-slate-900">{invoice.payment_method}</strong>
                   </div>
                 </div>
               </div>
@@ -211,7 +212,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                           {item.item_sku || 'N/A'}
                         </td>
                         <td className="py-3 text-center font-medium">
-                          {item.quantity} {item.unit_of_measurement || 'units'}
+                          {item.quantity} {item.unit_of_measurement || 'pcs'}
                         </td>
                         <td className="py-3 text-right font-mono">
                           ₹{item.price_at_time.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
@@ -228,9 +229,9 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
               {/* Calculation Summary Block */}
               <div className="flex flex-col sm:flex-row justify-between items-start gap-6 pt-4 border-t border-slate-200">
                 <div className="text-xs text-slate-500 max-w-xs space-y-1">
-                  <div className="font-bold text-slate-800">Terms & Conditions</div>
-                  <div>1. Goods once sold are subject to standard warehouse inspection warranty.</div>
-                  <div>2. This invoice is computer-generated and legally valid.</div>
+                  <div className="font-bold text-slate-800">Thank you for your visit!</div>
+                  <div>• Goods once sold are covered under standard manufacturer guarantee.</div>
+                  <div>• Please retain this computer-generated receipt for returns or exchanges within 7 days.</div>
                 </div>
 
                 <div className="w-full sm:w-64 space-y-2 text-xs">
@@ -269,10 +270,10 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
               </div>
 
               {/* Authorized Signatory */}
-              <div className="pt-8 flex justify-end">
+              <div className="pt-6 flex justify-end">
                 <div className="text-center w-48 border-t border-slate-300 pt-2">
-                  <div className="text-[11px] font-semibold text-slate-800">Authorized Signatory</div>
-                  <div className="text-[10px] text-slate-400">Enterprise Operations Manager</div>
+                  <div className="text-[11px] font-semibold text-slate-800">Authorized Cashier</div>
+                  <div className="text-[10px] text-slate-400">{invoice.user_name || 'Store Operations'}</div>
                 </div>
               </div>
             </div>
