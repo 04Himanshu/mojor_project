@@ -1,9 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Moon, Sun } from 'lucide-react';
+import { Search, Bell, Moon, Sun, Clock, Calendar } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const Header: React.FC = () => {
   const { toast } = useToast();
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  // Real-time clock tick every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const timeString = currentDateTime.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  });
+
+  const dateString = currentDateTime.toLocaleDateString('en-US', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -55,6 +79,20 @@ const Header: React.FC = () => {
 
       {/* Right Actions */}
       <div className="flex items-center space-x-2 sm:space-x-3">
+        {/* Real-time Clock & Date Widget */}
+        <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 select-none shadow-2xs">
+          <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+            <Clock size={13} className="text-blue-500 animate-pulse" />
+            <span className="font-mono font-bold tracking-tight text-slate-800 dark:text-slate-100 tabular-nums">
+              {timeString}
+            </span>
+          </div>
+          <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
+          <div className="hidden sm:flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+            <Calendar size={12} className="text-slate-400" />
+            <span>{dateString}</span>
+          </div>
+        </div>
 
         {/* Dark Mode Toggle */}
         <button
