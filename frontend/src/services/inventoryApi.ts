@@ -63,6 +63,11 @@ export const inventoryApi = {
   },
 
   // 2. Add and Edit Inventory Items
+  seedSampleItems: async (): Promise<{ added: number; total: number }> => {
+    const res = await apiClient.post<{ added: number; total: number }>('/inventory/seed-samples');
+    return res.data;
+  },
+
   createItem: async (data: CreateItemPayload): Promise<InventoryItem> => {
     const res = await apiClient.post<InventoryItem>('/inventory/', data);
     return res.data;

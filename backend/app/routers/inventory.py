@@ -105,6 +105,14 @@ def get_inventory_item(
     """View single inventory item details. Requires 'inventory:view'."""
     return inventory_service.get_item_by_id(db, item_id)
 
+@router.post("/seed-samples")
+def seed_sample_items(
+    db: Session = Depends(get_db),
+    auth: dict = Depends(require_permission("inventory:create"))
+):
+    """Seed or enrich catalog with missing standard sample items. Requires 'inventory:create'."""
+    return inventory_service.seed_missing_sample_items(db)
+
 @router.post("/", response_model=InventoryResponse, status_code=201)
 def create_inventory_item(
     payload: InventoryCreate, 

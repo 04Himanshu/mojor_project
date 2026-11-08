@@ -654,6 +654,134 @@ def seed_default_data_if_empty(db: Session):
                 {"type": "STOCK_IN", "qty": 100, "prev": 0, "res": 100, "reason": "Stationery Restock", "ref": "PO-1008", "user": "Admin User"},
                 {"type": "STOCK_OUT", "qty": 15, "prev": 100, "res": 85, "reason": "Office Admin Supply", "ref": "INT-905", "user": "Admin User"}
             ]
+        },
+        {
+            "sku": "MOUSE-WL-PRO",
+            "name": "Ergonomic Wireless Optical Mouse",
+            "description": "Precision 4000 DPI rechargeable optical mouse with dual Bluetooth & 2.4GHz",
+            "category": "Electronics",
+            "unit_of_measurement": "pcs",
+            "cost_price": 950.0,
+            "selling_price": 1699.0,
+            "quantity": 56,
+            "reorder_level": 12,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 60, "prev": 0, "res": 60, "reason": "Accessory Stock Initialized", "ref": "PO-1009", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 4, "prev": 60, "res": 56, "reason": "Store Sales", "ref": "SO-2065", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "STAND-ALUM-L",
+            "name": "Foldable Aluminium Laptop Riser",
+            "description": "Adjustable multi-angle ventilated laptop stand for 11-17 inch notebooks",
+            "category": "Furniture",
+            "unit_of_measurement": "units",
+            "cost_price": 750.0,
+            "selling_price": 1399.0,
+            "quantity": 28,
+            "reorder_level": 6,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 30, "prev": 0, "res": 30, "reason": "Desk Accessories Restock", "ref": "PO-1010", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 2, "prev": 30, "res": 28, "reason": "Walk-in purchase", "ref": "SO-2066", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "HEADSET-PRO-NC",
+            "name": "Over-Ear ANC Wireless Headset",
+            "description": "Active noise cancelling stereo headset with crystal clear boom microphone",
+            "category": "Electronics",
+            "unit_of_measurement": "pcs",
+            "cost_price": 2900.0,
+            "selling_price": 4999.0,
+            "quantity": 19,
+            "reorder_level": 5,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 20, "prev": 0, "res": 20, "reason": "Audio Inflow", "ref": "PO-1011", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 1, "prev": 20, "res": 19, "reason": "Customer Order", "ref": "SO-2067", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "BUBBLE-ROLL-100",
+            "name": "Air Bubble Cushioning Wrap (100m Roll)",
+            "description": "Shock-absorbent high density air bubble protective packaging roll",
+            "category": "Packaging",
+            "unit_of_measurement": "roll",
+            "cost_price": 520.0,
+            "selling_price": 890.0,
+            "quantity": 42,
+            "reorder_level": 10,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 50, "prev": 0, "res": 50, "reason": "Packaging Material Inward", "ref": "PO-1012", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 8, "prev": 50, "res": 42, "reason": "Shipping Dept Usage", "ref": "INT-910", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "TAPE-PACK-BRN",
+            "name": "Heavy Duty Packaging Tape (Pack of 6)",
+            "description": "2-inch industrial strength self-adhesive carton sealing tape",
+            "category": "Packaging",
+            "unit_of_measurement": "pack",
+            "cost_price": 220.0,
+            "selling_price": 410.0,
+            "quantity": 64,
+            "reorder_level": 15,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 70, "prev": 0, "res": 70, "reason": "Warehouse Dispatch Supply", "ref": "PO-1013", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 6, "prev": 70, "res": 64, "reason": "Counter Sales", "ref": "SO-2070", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "NOTES-STICKY-5",
+            "name": "Neon Sticky Notes (3x3 inch, 5 Pads)",
+            "description": "Ultra-adhesive colorful memo repositionable notes 100 sheets per pad",
+            "category": "Stationery",
+            "unit_of_measurement": "pack",
+            "cost_price": 85.0,
+            "selling_price": 199.0,
+            "quantity": 90,
+            "reorder_level": 25,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 100, "prev": 0, "res": 100, "reason": "Stationery Restock", "ref": "PO-1014", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 10, "prev": 100, "res": 90, "reason": "Office Admin Issue", "ref": "INT-915", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "CABLE-C-100W",
+            "name": "Braided 100W Fast-Charging USB-C Cable (2m)",
+            "description": "Nylon braided E-marker chip USB-C to USB-C 480Mbps PD cable",
+            "category": "Electronics",
+            "unit_of_measurement": "pcs",
+            "cost_price": 180.0,
+            "selling_price": 450.0,
+            "quantity": 110,
+            "reorder_level": 20,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 120, "prev": 0, "res": 120, "reason": "Accessories Batch Received", "ref": "PO-1015", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 10, "prev": 120, "res": 110, "reason": "POS Sales", "ref": "SO-2075", "user": "Admin User"}
+            ]
+        },
+        {
+            "sku": "DESK-PAD-XL",
+            "name": "Waterproof Leather Desk Mat (90x40cm)",
+            "description": "Dual-sided PU leather extended mouse pad and desk blotter protector",
+            "category": "Stationery",
+            "unit_of_measurement": "pcs",
+            "cost_price": 380.0,
+            "selling_price": 799.0,
+            "quantity": 35,
+            "reorder_level": 8,
+            "is_active": True,
+            "movements": [
+                {"type": "STOCK_IN", "qty": 40, "prev": 0, "res": 40, "reason": "Supplier Order", "ref": "PO-1016", "user": "Admin User"},
+                {"type": "STOCK_OUT", "qty": 5, "prev": 40, "res": 35, "reason": "Retail Customer Sale", "ref": "SO-2080", "user": "Admin User"}
+            ]
         }
     ]
 
@@ -677,3 +805,131 @@ def seed_default_data_if_empty(db: Session):
             )
             db.add(mov)
         db.commit()
+
+def seed_missing_sample_items(db: Session) -> dict:
+    """Populates additional realistic catalog items that don't already exist in the database."""
+    additional_samples = [
+        {
+            "sku": "MOUSE-WL-PRO",
+            "name": "Ergonomic Wireless Optical Mouse",
+            "description": "Precision 4000 DPI rechargeable optical mouse with dual Bluetooth & 2.4GHz",
+            "category": "Electronics",
+            "unit_of_measurement": "pcs",
+            "cost_price": 950.0,
+            "selling_price": 1699.0,
+            "quantity": 56,
+            "reorder_level": 12,
+            "is_active": True,
+        },
+        {
+            "sku": "STAND-ALUM-L",
+            "name": "Foldable Aluminium Laptop Riser",
+            "description": "Adjustable multi-angle ventilated laptop stand for 11-17 inch notebooks",
+            "category": "Furniture",
+            "unit_of_measurement": "units",
+            "cost_price": 750.0,
+            "selling_price": 1399.0,
+            "quantity": 28,
+            "reorder_level": 6,
+            "is_active": True,
+        },
+        {
+            "sku": "HEADSET-PRO-NC",
+            "name": "Over-Ear ANC Wireless Headset",
+            "description": "Active noise cancelling stereo headset with crystal clear boom microphone",
+            "category": "Electronics",
+            "unit_of_measurement": "pcs",
+            "cost_price": 2900.0,
+            "selling_price": 4999.0,
+            "quantity": 19,
+            "reorder_level": 5,
+            "is_active": True,
+        },
+        {
+            "sku": "BUBBLE-ROLL-100",
+            "name": "Air Bubble Cushioning Wrap (100m Roll)",
+            "description": "Shock-absorbent high density air bubble protective packaging roll",
+            "category": "Packaging",
+            "unit_of_measurement": "roll",
+            "cost_price": 520.0,
+            "selling_price": 890.0,
+            "quantity": 42,
+            "reorder_level": 10,
+            "is_active": True,
+        },
+        {
+            "sku": "TAPE-PACK-BRN",
+            "name": "Heavy Duty Packaging Tape (Pack of 6)",
+            "description": "2-inch industrial strength self-adhesive carton sealing tape",
+            "category": "Packaging",
+            "unit_of_measurement": "pack",
+            "cost_price": 220.0,
+            "selling_price": 410.0,
+            "quantity": 64,
+            "reorder_level": 15,
+            "is_active": True,
+        },
+        {
+            "sku": "NOTES-STICKY-5",
+            "name": "Neon Sticky Notes (3x3 inch, 5 Pads)",
+            "description": "Ultra-adhesive colorful memo repositionable notes 100 sheets per pad",
+            "category": "Stationery",
+            "unit_of_measurement": "pack",
+            "cost_price": 85.0,
+            "selling_price": 199.0,
+            "quantity": 90,
+            "reorder_level": 25,
+            "is_active": True,
+        },
+        {
+            "sku": "CABLE-C-100W",
+            "name": "Braided 100W Fast-Charging USB-C Cable (2m)",
+            "description": "Nylon braided E-marker chip USB-C to USB-C 480Mbps PD cable",
+            "category": "Electronics",
+            "unit_of_measurement": "pcs",
+            "cost_price": 180.0,
+            "selling_price": 450.0,
+            "quantity": 110,
+            "reorder_level": 20,
+            "is_active": True,
+        },
+        {
+            "sku": "DESK-PAD-XL",
+            "name": "Waterproof Leather Desk Mat (90x40cm)",
+            "description": "Dual-sided PU leather extended mouse pad and desk blotter protector",
+            "category": "Stationery",
+            "unit_of_measurement": "pcs",
+            "cost_price": 380.0,
+            "selling_price": 799.0,
+            "quantity": 35,
+            "reorder_level": 8,
+            "is_active": True,
+        }
+    ]
+
+    added = 0
+    for item_data in additional_samples:
+        existing = db.query(Inventory).filter(Inventory.sku == item_data["sku"]).first()
+        if not existing:
+            inv = Inventory(**item_data, created_at=datetime.utcnow())
+            db.add(inv)
+            db.flush()
+            mov = StockMovement(
+                inventory_id=inv.id,
+                transaction_type="STOCK_IN",
+                quantity=item_data["quantity"],
+                previous_quantity=0,
+                resulting_quantity=item_data["quantity"],
+                reason="Catalog Sample Stock Initialized",
+                reference_order="SAMPLE-INIT",
+                user_name="System Seed",
+                created_at=datetime.utcnow()
+            )
+            db.add(mov)
+            added += 1
+
+    if added > 0:
+        db.commit()
+
+    total = db.query(Inventory).filter(Inventory.is_active == True).count()
+    return {"added": added, "total": total}
