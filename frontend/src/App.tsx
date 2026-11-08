@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { PERMISSIONS } from './utils/rbac';
 
 function App() {
   return (
@@ -24,11 +25,56 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Dashboard />} />
-                <Route path="walk-in-order" element={<WalkInOrder />} />
-                <Route path="inventory" element={<Inventory />} />
-                <Route path="orders" element={<Orders />} />
-                <Route path="vendors" element={<Vendors />} />
-                <Route path="users" element={<UsersPage />} />
+
+                {/* Point-of-Sale Walk-in Counter: requires order creation or order viewing */}
+                <Route
+                  path="walk-in-order"
+                  element={
+                    <ProtectedRoute requiredPermission={[PERMISSIONS.ORDERS_CREATE, PERMISSIONS.ORDERS_VIEW]}>
+                      <WalkInOrder />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Inventory Management: requires inventory:view */}
+                <Route
+                  path="inventory"
+                  element={
+                    <ProtectedRoute requiredPermission={PERMISSIONS.INVENTORY_VIEW}>
+                      <Inventory />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Sales Orders: requires orders:view */}
+                <Route
+                  path="orders"
+                  element={
+                    <ProtectedRoute requiredPermission={PERMISSIONS.ORDERS_VIEW}>
+                      <Orders />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Procurement & Vendors: requires procurement:view */}
+                <Route
+                  path="vendors"
+                  element={
+                    <ProtectedRoute requiredPermission={PERMISSIONS.PROCUREMENT_VIEW}>
+                      <Vendors />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Users & Roles: STRICTLY restricted to Administrator / Admin */}
+                <Route
+                  path="users"
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <UsersPage />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
             </Route>
 

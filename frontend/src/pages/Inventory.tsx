@@ -14,6 +14,7 @@ import { InventoryTable } from '../components/inventory/InventoryTable';
 import { ItemModal } from '../components/inventory/ItemModal';
 import { StockTransactionModal } from '../components/inventory/StockTransactionModal';
 import { MovementHistoryModal } from '../components/inventory/MovementHistoryModal';
+import { useRBAC, PERMISSIONS } from '../utils/rbac';
 import { 
   Plus, 
   History, 
@@ -23,6 +24,10 @@ import {
 
 export const Inventory: React.FC = () => {
   const { toast } = useToast();
+  const { isAdmin: isUserAdmin, hasPermission: checkPerm } = useRBAC();
+  const canAdjust = isUserAdmin || checkPerm(PERMISSIONS.INVENTORY_STOCK_ADJUST);
+  const canCreate = isUserAdmin || checkPerm(PERMISSIONS.INVENTORY_CREATE);
+
   // Inventory list state
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [stats, setStats] = useState<InventoryStats | null>(null);
@@ -209,21 +214,25 @@ export const Inventory: React.FC = () => {
             <span>Movement History</span>
           </button>
 
-          <button
-            onClick={() => handleOpenTransaction(null, 'STOCK_IN')}
-            className="btn-success"
-          >
-            <ArrowRightLeft size={14} />
-            <span>Stock In / Out</span>
-          </button>
+          {canAdjust && (
+            <button
+              onClick={() => handleOpenTransaction(null, 'STOCK_IN')}
+              className="btn-success"
+            >
+              <ArrowRightLeft size={14} />
+              <span>Stock In / Out</span>
+            </button>
+          )}
 
-          <button
-            onClick={handleAddNewItem}
-            className="btn-primary"
-          >
-            <Plus size={15} />
-            <span>Add New Item</span>
-          </button>
+          {canCreate && (
+            <button
+              onClick={handleAddNewItem}
+              className="btn-primary"
+            >
+              <Plus size={15} />
+              <span>Add New Item</span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Order } from '../../types/order';
 import { orderApi } from '../../services/orderApi';
 import { ConfirmModal } from '../common/ConfirmModal';
+import { useRBAC, PERMISSIONS } from '../../utils/rbac';
 import { 
   X, 
   FileText, 
@@ -33,6 +34,10 @@ export const OrderDetailsModal: React.FC<Props> = ({
   onOpenInvoice,
   showNotification
 }) => {
+  const { isAdmin: isUserAdmin, hasPermission: checkPerm } = useRBAC();
+  const canChangeStatus = isUserAdmin || checkPerm(PERMISSIONS.ORDERS_STATUS_CHANGE);
+  const canViewInvoice = isUserAdmin || checkPerm(PERMISSIONS.ORDERS_INVOICE);
+
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
@@ -288,7 +293,7 @@ export const OrderDetailsModal: React.FC<Props> = ({
           </div>
 
           {/* Void / Cancel Sale Action */}
-          {!isCancelled && (
+          {!isCancelled && canChangeStatus && (
             <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/30 dark:bg-rose-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <span className="text-xs font-bold text-rose-700 dark:text-rose-400 block">
@@ -317,14 +322,16 @@ export const OrderDetailsModal: React.FC<Props> = ({
             Order Ref: <strong className="font-mono text-slate-700 dark:text-slate-300">{order.order_number}</strong>
           </span>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onOpenInvoice(order)}
-              className="btn-secondary text-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <FileText size={13} className="text-blue-500" />
-              <span>View Receipt</span>
-            </button>
+            {canViewInvoice && (
+              <button
+                type="button"
+                onClick={() => onOpenInvoice(order)}
+                className="btn-secondary text-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <FileText size={13} className="text-blue-500" />
+                <span>View Receipt</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}

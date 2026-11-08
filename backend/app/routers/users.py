@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.core.database import get_db
-from app.dependencies.permissions import require_permission, require_roles
+from app.dependencies.permissions import require_roles
 from app.core import security
 from app.schemas.user import (
     RoleCreate, RoleUpdate, RoleResponse,
@@ -14,20 +14,25 @@ from app.services import user_service
 
 router = APIRouter()
 
+# Strictly require Administrator role for all User and Role Management endpoints
+admin_only = require_roles(["Administrator", "Admin"])
+
 # ==========================================
 # Overview Stats & Permissions Catalog
 # ==========================================
 @router.get("/stats", response_model=UserStatsResponse)
 def get_user_stats(
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:view"))
+    auth: dict = Depends(admin_only)
 ):
-    """Retrieve high-level user and role metrics for executive dashboard cards."""
+    """Retrieve high-level user and role metrics for executive dashboard cards. Restricted to Administrator."""
     return user_service.get_user_stats(db)
 
 @router.get("/permissions")
-def get_permissions_catalog():
-    """Returns the full granular RBAC permission matrix definitions grouped by module."""
+def get_permissions_catalog(
+    auth: dict = Depends(admin_only)
+):
+    """Returns the full granular RBAC permission matrix definitions grouped by module. Restricted to Administrator."""
     modules = {}
     for p in ALL_PERMISSIONS:
         mod = p["module"]
@@ -40,23 +45,23 @@ def get_permissions_catalog():
     }
 
 # ==========================================
-# Roles Endpoints (Strictly protected by roles:manage)
+# Roles Endpoints (Strictly protected by Administrator)
 # ==========================================
 @router.get("/roles", response_model=List[RoleResponse])
 def get_roles(
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:view"))
+    auth: dict = Depends(admin_only)
 ):
-    """List all configured system and custom user roles with assigned staff count."""
+    """List all configured system and custom user roles with assigned staff count. Restricted to Administrator."""
     return user_service.get_roles(db)
 
 @router.post("/roles", response_model=RoleResponse, status_code=status.HTTP_201_CREATED)
 def create_role(
     data: RoleCreate, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("roles:manage"))
+    auth: dict = Depends(admin_only)
 ):
-    """Create a new custom role with a selected permission set. Requires 'roles:manage'."""
+    """Create a new custom role with a selected permission set. Restricted to Administrator."""
     try:
         return user_service.create_role(db, data)
     except ValueError as e:
@@ -66,9 +71,9 @@ def create_role(
 def get_role(
     role_id: int, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:view"))
+    auth: dict = Depends(admin_only)
 ):
-    """Retrieve details for a specific role."""
+    """Retrieve details for a specific role. Restricted to Administrator."""
     role = user_service.get_role_by_id(db, role_id)
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Role not found")
@@ -83,9 +88,9 @@ def update_role(
     role_id: int, 
     data: RoleUpdate, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("roles:manage"))
+    auth: dict = Depends(admin_only)
 ):
-    """Update role metadata, badge color, and assigned permissions. Requires 'roles:manage'."""
+    """Update role metadata, badge color, and assigned permissions. Restricted to Administrator."""
     try:
         updated = user_service.update_role(db, role_id, data)
         if not updated:
@@ -98,9 +103,9 @@ def update_role(
 def delete_role(
     role_id: int, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("roles:manage"))
+    auth: dict = Depends(admin_only)
 ):
-    """Delete a custom role. System built-in roles and roles with active users cannot be deleted."""
+    """Delete a custom role. System built-in roles and roles with active users cannot be deleted. Restricted to Administrator."""
     try:
         success = user_service.delete_role(db, role_id)
         if not success:
@@ -110,7 +115,7 @@ def delete_role(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 # ==========================================
-# Users Endpoints (Strictly protected by users:view/create/edit)
+# Users Endpoints (Strictly protected by Administrator)
 # ==========================================
 @router.get("/", response_model=List[UserResponse])
 def get_users(
@@ -121,9 +126,9 @@ def get_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:view"))
+    auth: dict = Depends(admin_only)
 ):
-    """Retrieve staff users list with filtering and search. Requires 'users:view'."""
+    """Retrieve staff users list with filtering and search. Restricted to Administrator."""
     return user_service.get_users(
         db=db,
         search=search,
@@ -138,9 +143,9 @@ def get_users(
 def create_user(
     data: UserCreate, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:create"))
+    auth: dict = Depends(admin_only)
 ):
-    """Register a new staff user with an assigned role and department. Requires 'users:create'."""
+    """Register a new staff user with an assigned role and department. Restricted to Administrator."""
     try:
         return user_service.create_user(db, data)
     except ValueError as e:
@@ -150,9 +155,9 @@ def create_user(
 def get_user(
     user_id: int, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:view"))
+    auth: dict = Depends(admin_only)
 ):
-    """Retrieve single user details with role and permissions. Requires 'users:view'."""
+    """Retrieve single user details with role and permissions. Restricted to Administrator."""
     user = user_service.get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -163,9 +168,9 @@ def update_user(
     user_id: int, 
     data: UserUpdate, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:edit"))
+    auth: dict = Depends(admin_only)
 ):
-    """Update staff profile details, role, department, or active status. Requires 'users:edit'."""
+    """Update staff profile details, role, department, or active status. Restricted to Administrator."""
     try:
         updated = user_service.update_user(db, user_id, data)
         if not updated:
@@ -184,9 +189,9 @@ def update_user_status(
     user_id: int, 
     data: UserStatusUpdate, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_permission("users:edit"))
+    auth: dict = Depends(admin_only)
 ):
-    """Quick toggle or update staff status (Active, Suspended, Inactive). Requires 'users:edit'."""
+    """Quick toggle or update staff status (Active, Suspended, Inactive). Restricted to Administrator."""
     updated = user_service.update_user_status(db, user_id, data.status)
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -201,7 +206,7 @@ def update_user_status(
 def delete_user(
     user_id: int, 
     db: Session = Depends(get_db),
-    auth: dict = Depends(require_roles(["Administrator", "Admin"]))
+    auth: dict = Depends(admin_only)
 ):
     """Delete a staff user. Restricted to Administrator role. Invalidate all user sessions."""
     try:

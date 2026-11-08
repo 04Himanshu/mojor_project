@@ -1,5 +1,6 @@
 import React from 'react';
 import type { PurchaseOrder } from '../../types/procurement';
+import { useRBAC, PERMISSIONS } from '../../utils/rbac';
 import { Search, FileText, Truck, Printer, Clock } from 'lucide-react';
 
 interface Props {
@@ -33,6 +34,9 @@ export const PurchaseOrdersTable: React.FC<Props> = ({
   onOpenReceiveGoodsModal,
   onOpenPOVoucherModal,
 }) => {
+  const { isAdmin: isUserAdmin, hasPermission: checkPerm } = useRBAC();
+  const canReceivePerm = isUserAdmin || checkPerm(PERMISSIONS.PROCUREMENT_GRN_RECEIVE);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Received':
@@ -177,7 +181,7 @@ export const PurchaseOrdersTable: React.FC<Props> = ({
                 const totalOrdered = po.items.reduce((sum, i) => sum + i.quantity_ordered, 0);
                 const totalReceived = po.items.reduce((sum, i) => sum + i.quantity_received, 0);
                 const fulfillmentPercent = totalOrdered > 0 ? Math.round((totalReceived / totalOrdered) * 100) : 0;
-                const canReceive = po.status !== 'Received' && po.status !== 'Cancelled';
+                const canReceive = canReceivePerm && po.status !== 'Received' && po.status !== 'Cancelled';
 
                 return (
                   <tr

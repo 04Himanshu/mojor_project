@@ -1,5 +1,6 @@
 import React from 'react';
 import type { InventoryItem, StockStatus, TransactionType } from '../../types/inventory';
+import { useRBAC, PERMISSIONS } from '../../utils/rbac';
 import { 
   ArrowUpDown, 
   ArrowUp, 
@@ -73,6 +74,11 @@ export const InventoryTable: React.FC<Props> = ({
   onOpenTransaction,
   onViewHistory,
 }) => {
+  const { isAdmin: isUserAdmin, hasPermission: checkPerm } = useRBAC();
+  const canAdjust = isUserAdmin || checkPerm(PERMISSIONS.INVENTORY_STOCK_ADJUST);
+  const canEdit = isUserAdmin || checkPerm(PERMISSIONS.INVENTORY_EDIT);
+  const canDelete = isUserAdmin || checkPerm(PERMISSIONS.INVENTORY_DELETE);
+
   const renderSortIcon = (column: string) => {
     if (sortBy !== column) {
       return <ArrowUpDown size={12} className="text-slate-400/60 group-hover:text-slate-600 dark:group-hover:text-slate-200 shrink-0" />;
@@ -311,13 +317,15 @@ export const InventoryTable: React.FC<Props> = ({
                   <td className="table-td text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1">
                       {/* Stock Movement In/Out */}
-                      <button
-                        onClick={() => onOpenTransaction(item, 'STOCK_IN')}
-                        title="Stock In / Stock Out"
-                        className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <ArrowRightLeft size={15} />
-                      </button>
+                      {canAdjust && (
+                        <button
+                          onClick={() => onOpenTransaction(item, 'STOCK_IN')}
+                          title="Stock In / Stock Out"
+                          className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <ArrowRightLeft size={15} />
+                        </button>
+                      )}
 
                       {/* Movement History */}
                       <button
@@ -329,22 +337,26 @@ export const InventoryTable: React.FC<Props> = ({
                       </button>
 
                       {/* Edit */}
-                      <button
-                        onClick={() => onEditItem(item)}
-                        title="Edit Item"
-                        className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <Edit3 size={15} />
-                      </button>
+                      {canEdit && (
+                        <button
+                          onClick={() => onEditItem(item)}
+                          title="Edit Item"
+                          className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Edit3 size={15} />
+                        </button>
+                      )}
 
                       {/* Delete */}
-                      <button
-                        onClick={() => onDeleteItem(item)}
-                        title="Delete SKU Item"
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                      {canDelete && (
+                        <button
+                          onClick={() => onDeleteItem(item)}
+                          title="Delete SKU Item"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

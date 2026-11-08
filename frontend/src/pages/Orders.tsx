@@ -7,10 +7,14 @@ import { CreateOrderModal } from '../components/orders/CreateOrderModal';
 import { OrderDetailsModal } from '../components/orders/OrderDetailsModal';
 import { InvoiceModal } from '../components/orders/InvoiceModal';
 import { useToast } from '../context/ToastContext';
+import { useRBAC, PERMISSIONS } from '../utils/rbac';
 import { Plus, RefreshCw, Store } from 'lucide-react';
 
 export const Orders: React.FC = () => {
   const { toast } = useToast();
+  const { isAdmin: isUserAdmin, hasPermission: checkPerm } = useRBAC();
+  const canCreate = isUserAdmin || checkPerm(PERMISSIONS.ORDERS_CREATE);
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<OrderStats | null>(null);
   const [loading, setLoading] = useState(false);
@@ -108,13 +112,15 @@ export const Orders: React.FC = () => {
             <span>Refresh</span>
           </button>
 
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="btn-primary"
-          >
-            <Plus size={16} />
-            <span>New Walk-in Sale</span>
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="btn-primary"
+            >
+              <Plus size={16} />
+              <span>New Walk-in Sale</span>
+            </button>
+          )}
         </div>
       </div>
 

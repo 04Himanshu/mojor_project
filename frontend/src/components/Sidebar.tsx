@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { canAccessRoute, isAdmin } from '../utils/rbac';
 
 const Sidebar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -24,6 +25,9 @@ const Sidebar: React.FC = () => {
     { name: 'Vendors', path: '/vendors', icon: <Building2 size={17} /> },
     { name: 'Users & Roles', path: '/users', icon: <ShieldCheck size={17} /> },
   ];
+
+  // RBAC: Only render navigation links the user has authorization for
+  const visibleLinks = operationsLinks.filter((link) => canAccessRoute(user, link.path));
 
   const NavItem = ({ item }: { item: typeof operationsLinks[0] }) => (
     <NavLink
@@ -79,6 +83,7 @@ const Sidebar: React.FC = () => {
   };
 
   const initial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
+  const isUserAdmin = isAdmin(user);
 
   const handleLogout = () => {
     logout();
@@ -112,11 +117,18 @@ const Sidebar: React.FC = () => {
       {/* Navigation Links */}
       <div className="flex-1 px-3 py-5 space-y-6">
         <div>
-          <p className="px-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
-            Operations & Log
-          </p>
+          <div className="flex items-center justify-between px-3 mb-2">
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Operations & Log
+            </p>
+            {isUserAdmin && (
+              <span className="text-[9px] font-bold text-purple-400/80 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20 uppercase">
+                Admin Mode
+              </span>
+            )}
+          </div>
           <div className="space-y-1">
-            {operationsLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <NavItem key={link.name} item={link} />
             ))}
           </div>
@@ -138,9 +150,20 @@ const Sidebar: React.FC = () => {
               <p className="text-xs font-bold text-white truncate leading-tight">
                 {user?.name || 'Staff User'}
               </p>
-              <p className="text-[10px] font-medium text-slate-400 truncate leading-tight mt-0.5">
-                {user?.role_name || 'Staff'}
-              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <p className="text-[10px] font-medium text-slate-400 truncate leading-tight">
+                  {user?.role_name || 'Staff'}
+                </p>
+                {isUserAdmin ? (
+                  <span className="px-1 py-0.2 text-[8px] font-extrabold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded leading-none">
+                    Admin
+                  </span>
+                ) : (
+                  <span className="px-1 py-0.2 text-[8px] font-semibold text-slate-500 border border-slate-800 rounded leading-none">
+                    Staff
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

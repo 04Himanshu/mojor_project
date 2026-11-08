@@ -367,7 +367,7 @@ def seed_default_users_and_roles_if_empty(db: Session):
                 description="Read-only access across inventory records, financial totals, customer orders, and supplier directory.",
                 color="slate",
                 permissions=_serialize_permissions([
-                    "inventory:view", "orders:view", "procurement:view", "users:view"
+                    "inventory:view", "orders:view", "procurement:view"
                 ]),
                 is_system=False
             ),

@@ -20,9 +20,14 @@ import { CreateSupplierModal } from '../components/procurement/CreateSupplierMod
 import { CreatePurchaseOrderModal } from '../components/procurement/CreatePurchaseOrderModal';
 import { ReceiveGoodsModal } from '../components/procurement/ReceiveGoodsModal';
 import { POVoucherModal } from '../components/procurement/POVoucherModal';
+import { useRBAC, PERMISSIONS } from '../utils/rbac';
 
 export const Vendors: React.FC = () => {
   const { toast } = useToast();
+  const { isAdmin: isUserAdmin, hasPermission: checkPerm } = useRBAC();
+  const canManageSuppliers = isUserAdmin || checkPerm(PERMISSIONS.SUPPLIERS_MANAGE);
+  const canCreatePO = isUserAdmin || checkPerm(PERMISSIONS.PROCUREMENT_CREATE_PO);
+
   const [activeTab, setActiveTab] = useState<'orders' | 'suppliers' | 'receipts'>('orders');
   const [stats, setStats] = useState<ProcurementStats | null>(null);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -233,21 +238,25 @@ export const Vendors: React.FC = () => {
             <span>Refresh</span>
           </button>
 
-          <button
-            onClick={handleOpenCreateSupplier}
-            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
-          >
-            <Plus size={14} />
-            <span>New Supplier</span>
-          </button>
+          {canManageSuppliers && (
+            <button
+              onClick={handleOpenCreateSupplier}
+              className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
+            >
+              <Plus size={14} />
+              <span>New Supplier</span>
+            </button>
+          )}
 
-          <button
-            onClick={() => handleOpenCreatePO()}
-            className="btn-primary text-xs py-2 px-3.5 flex items-center gap-1.5"
-          >
-            <FileText size={14} />
-            <span>Create Purchase Order</span>
-          </button>
+          {canCreatePO && (
+            <button
+              onClick={() => handleOpenCreatePO()}
+              className="btn-primary text-xs py-2 px-3.5 flex items-center gap-1.5"
+            >
+              <FileText size={14} />
+              <span>Create Purchase Order</span>
+            </button>
+          )}
         </div>
       </div>
 

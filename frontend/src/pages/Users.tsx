@@ -24,9 +24,19 @@ import { UsersTable } from '../components/users/UsersTable';
 import { RolesMatrixTab } from '../components/users/RolesMatrixTab';
 import { CreateUserModal } from '../components/users/CreateUserModal';
 import { CreateRoleModal } from '../components/users/CreateRoleModal';
+import { useAuth } from '../context/AuthContext';
+import { isAdmin } from '../utils/rbac';
+import { Navigate } from 'react-router-dom';
 
 export const UsersPage: React.FC = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
+
+  // Defense-in-depth: If non-admin attempts to mount this component, redirect to dashboard
+  if (!isAdmin(user)) {
+    return <Navigate to="/" replace />;
+  }
+
   const [activeTab, setActiveTab] = useState<'users' | 'roles'>('users');
   const [stats, setStats] = useState<UserStats | null>(null);
   const [users, setUsers] = useState<User[]>([]);
