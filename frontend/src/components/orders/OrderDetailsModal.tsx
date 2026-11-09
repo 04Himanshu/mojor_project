@@ -209,12 +209,25 @@ export const OrderDetailsModal: React.FC<Props> = ({
                 <CreditCard size={13} className="text-emerald-500" />
                 Payment Method
               </span>
-              <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                {order.payment_method}
+              <div className="text-sm font-semibold text-slate-900 dark:text-white flex items-center justify-between">
+                <span>{order.payment_method}</span>
+                <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                  order.payment_status === 'Paid'
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                    : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                }`}>
+                  {order.payment_status}
+                </span>
               </div>
-              <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                {order.payment_status}
-              </div>
+              {order.cf_payment_id ? (
+                <div className="text-[10px] text-slate-500 font-mono truncate pt-0.5" title={`Cashfree PG Reference: ${order.cf_payment_id}`}>
+                  Ref: <span className="text-slate-700 dark:text-slate-300 font-semibold">{order.cf_payment_id}</span>
+                </div>
+              ) : (
+                <div className="text-[10px] text-slate-500">
+                  Channel: {order.payment_gateway || 'Counter Cash'}
+                </div>
+              )}
             </div>
           </div>
 

@@ -11,6 +11,18 @@ class Settings(BaseSettings):
     LOGIN_RATE_LIMIT_MAX_ATTEMPTS: int = 5
     LOGIN_RATE_LIMIT_WINDOW_SECONDS: int = 60
     
+    # Cashfree Payment Gateway Settings
+    CASHFREE_APP_ID: str = ""
+    CASHFREE_SECRET_KEY: str = ""
+    CASHFREE_ENVIRONMENT: str = "SANDBOX"  # "SANDBOX" or "PRODUCTION"
+    CASHFREE_API_VERSION: str = "2023-08-01"
+    CASHFREE_RETURN_URL: str = "http://localhost:5173/orders"
+
+    def get_cashfree_base_url(self) -> str:
+        if self.CASHFREE_ENVIRONMENT.upper() == "PRODUCTION":
+            return "https://api.cashfree.com/pg"
+        return "https://sandbox.cashfree.com/pg"
+    
     def get_cors_origins(self) -> List[str]:
         if not self.CORS_ORIGINS:
             return ["http://localhost:5173", "http://127.0.0.1:5173"]

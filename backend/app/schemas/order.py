@@ -4,7 +4,7 @@ from datetime import datetime
 
 VALID_ORDER_STATUSES = ["Completed", "Cancelled", "Pending", "Confirmed", "Dispatched", "Delivered"]
 VALID_PAYMENT_STATUSES = ["Paid", "Unpaid", "Partially Paid", "Refunded"]
-VALID_PAYMENT_METHODS = ["Cash", "Card", "UPI", "Bank Transfer", "Credit Net 30"]
+VALID_PAYMENT_METHODS = ["UPI", "QR Code", "Card", "Cash", "Bank Transfer", "Credit Net 30"]
 
 class OrderItemBase(BaseModel):
     inventory_id: int = Field(..., gt=0, description="Valid inventory ID required")
@@ -75,6 +75,9 @@ class OrderResponse(BaseModel):
     stock_deducted: bool
     payment_status: str
     payment_method: str
+    payment_gateway: Optional[str] = "Manual"
+    cf_order_id: Optional[str] = None
+    cf_payment_id: Optional[str] = None
     notes: Optional[str] = None
     subtotal: float
     tax_rate: float
@@ -122,6 +125,9 @@ class InvoiceDataResponse(BaseModel):
     status: str
     payment_status: str
     payment_method: str
+    payment_gateway: Optional[str] = "Manual"
+    cf_order_id: Optional[str] = None
+    cf_payment_id: Optional[str] = None
     notes: Optional[str] = None
     items: List[OrderItemResponse]
     subtotal: float

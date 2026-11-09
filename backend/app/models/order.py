@@ -19,6 +19,12 @@ class Order(Base):
     tax_rate = Column(Float, default=0.0, nullable=False) # e.g. 0.18 for 18%
     discount_amount = Column(Float, default=0.0, nullable=False)
     
+    # Cashfree & Payment Gateway integration fields
+    payment_gateway = Column(String(50), default="Manual", nullable=True) # Manual, Cashfree
+    cf_order_id = Column(String(100), nullable=True, index=True)
+    cf_payment_id = Column(String(100), nullable=True)
+    
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     customer = relationship("Customer")
     user = relationship("User")
+    transactions = relationship("PaymentTransaction", back_populates="order", cascade="all, delete-orphan")

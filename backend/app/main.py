@@ -3,13 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.database import engine, Base, SessionLocal
-from app.routers import customers, inventory, orders, dashboard, users, procurement, auth
+from app.routers import customers, inventory, orders, dashboard, users, procurement, auth, payments
 import app.models  # Ensures all models are registered
 from app.services import inventory_service, customer_service, order_service, procurement_service, user_service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    from app.core.database import ensure_order_payment_columns
+    ensure_order_payment_columns()
     db = SessionLocal()
     try:
         inventory_service.seed_default_data_if_empty(db)
@@ -45,6 +47,7 @@ app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventor
 app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Dashboard"])
 app.include_router(customers.router, prefix="/api/v1/customers", tags=["Customers"])
 app.include_router(orders.router, prefix="/api/v1/orders", tags=["Orders"])
+app.include_router(payments.router, prefix="/api/v1/payments", tags=["Payments"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(procurement.router, prefix="/api/v1/procurement", tags=["Procurement & Vendors"])
 

@@ -1,6 +1,6 @@
 export type OrderStatus = 'Completed' | 'Cancelled' | 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered';
 export type PaymentStatus = 'Paid' | 'Unpaid' | 'Partially Paid' | 'Refunded';
-export type PaymentMethod = 'Cash' | 'Card' | 'UPI' | 'Bank Transfer' | 'Credit Net 30';
+export type PaymentMethod = 'Cash' | 'QR Code' | 'UPI' | 'Card' | string;
 
 export interface OrderItem {
   id: number;
@@ -33,6 +33,9 @@ export interface Order {
   stock_deducted: boolean;
   payment_status: PaymentStatus;
   payment_method: PaymentMethod;
+  payment_gateway?: string;
+  cf_order_id?: string;
+  cf_payment_id?: string;
   notes?: string;
   subtotal: number;
   tax_rate: number;
@@ -99,6 +102,9 @@ export interface InvoiceData {
   status: OrderStatus;
   payment_status: PaymentStatus;
   payment_method: PaymentMethod;
+  payment_gateway?: string;
+  cf_order_id?: string;
+  cf_payment_id?: string;
   notes?: string;
   items: OrderItem[];
   subtotal: number;

@@ -57,8 +57,8 @@ export const WalkInOrder: React.FC = () => {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
 
-  // Payment & Billing
-  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Card' | 'UPI' | 'Bank Transfer'>('Cash');
+  // Payment & Billing (Cash, UPI, QR, Cards via Cashfree PG)
+  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'QR Code' | 'UPI' | 'Card'>('Cash');
   const [paymentStatus, setPaymentStatus] = useState<string>('Paid');
   const [taxRate, setTaxRate] = useState<number>(0.18);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
@@ -345,6 +345,15 @@ export const WalkInOrder: React.FC = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleCashfreeSuccess = (order: Order) => {
+    toast.success(`Online payment confirmed! Order ${order.order_number} settled.`, 'Sale Completed');
+    setCompletedOrder(order);
+    setIsPaymentModalOpen(false);
+    setIsInvoiceOpen(true);
+    handleClearCart();
+    loadInventory();
   };
 
   return (
@@ -1029,6 +1038,7 @@ export const WalkInOrder: React.FC = () => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         onCompleteSale={handleCompleteSale}
+        onCashfreeSuccess={handleCashfreeSuccess}
         submitting={submitting}
         grandTotal={grandTotal}
         subtotal={subtotal}
@@ -1038,7 +1048,9 @@ export const WalkInOrder: React.FC = () => {
         cart={cart}
         customerName={customerName}
         customerPhone={customerPhone}
+        customerEmail={customerEmail}
         customerMode={customerMode}
+        selectedCustomerId={selectedCustomerId}
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
         cashTendered={cashTendered}

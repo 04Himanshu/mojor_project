@@ -11,3 +11,4 @@ from .purchase_order import PurchaseOrder
 from .purchase_order_item import PurchaseOrderItem
 from .goods_receipt import GoodsReceipt
 from .goods_receipt_item import GoodsReceiptItem
+from .payment_transaction import PaymentTransaction
