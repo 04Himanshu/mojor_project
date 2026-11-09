@@ -320,11 +320,11 @@ def create_order(
     except HTTPException:
         db.rollback()
         raise
-    except Exception as exc:
+    except Exception:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to process counter order: {str(exc)}"
+            detail="Failed to process counter order. Please try again."
         )
 
 def update_order_status(
@@ -435,11 +435,11 @@ def update_order_status(
     except HTTPException:
         db.rollback()
         raise
-    except Exception as exc:
+    except Exception:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update order status: {str(exc)}"
+            detail="Failed to update order status. Please try again."
         )
 
 def get_order_invoice(db: Session, order_id: int) -> dict:

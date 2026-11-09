@@ -330,7 +330,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                   <div className="flex justify-between items-center text-[10px] text-slate-500 font-medium pb-4 border-b border-slate-200 uppercase tracking-widest">
                     <span className="flex items-center gap-1.5">
                       <ShieldCheck size={12} className="text-emerald-600" />
-                      TAX INVOICE • SEC. 31 CENTRAL GOODS & SERVICES TAX ACT
+                      OFFICIAL TAX INVOICE • RETAIL COUNTER
                     </span>
                     <span className="font-semibold text-slate-700">ORIGINAL FOR RECIPIENT</span>
                   </div>
@@ -411,8 +411,8 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                             </strong>
                           </div>
                           <div>
-                            Place of Supply:{' '}
-                            <span className="text-slate-700 font-medium">Karnataka (Code 29)</span>
+                            State:{' '}
+                            <span className="text-slate-700 font-medium">Karnataka</span>
                           </div>
                         </div>
                       </div>
@@ -505,7 +505,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                                 {item.item_name || 'Standard Inventory Item'}
                               </span>
                               <span className="text-[10px] text-slate-500 font-mono">
-                                HSN: 8471 • Quality Inspected
+                                Verified Retail Product
                               </span>
                             </td>
                             <td className="py-3 px-2 font-mono text-slate-600 text-[11px]">
@@ -573,7 +573,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                           </div>
                           {gatewayRef && (
                             <div className="col-span-2 font-mono text-[10px] text-slate-700 bg-slate-50 p-1.5 rounded border border-slate-200">
-                              PG Ref / Auth ID: <strong className="text-slate-900">{gatewayRef}</strong>
+                              Payment Reference: <strong className="text-slate-900">{gatewayRef}</strong>
                             </div>
                           )}
                         </div>
@@ -635,7 +635,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                     <div className="flex flex-col items-center sm:items-start">
                       <BarcodeDisplay value={invoice.invoice_number} />
                       <p className="text-[10px] text-slate-400 mt-1">
-                        Scan at counter terminal for speedy returns or warranty lookup
+                        Scan for quick order verification and return processing
                       </p>
                     </div>
 
@@ -645,7 +645,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                       </div>
                       <div className="h-10 flex items-center justify-center sm:justify-end">
                         <span className="font-serif italic text-sm text-slate-400 select-none">
-                          Authorized E-Sign
+                          Authorized Signature
                         </span>
                       </div>
                       <div className="border-t border-slate-300 pt-1 text-[11px] font-semibold text-slate-700">
@@ -662,7 +662,7 @@ export const InvoiceModal: React.FC<Props> = ({ order, isOpen, onClose }) => {
                     <p className="font-bold text-slate-700 text-[11px] mb-1">Terms & Conditions of Sale:</p>
                     <p>1. Goods once sold can be exchanged within 7 days against original receipt in unused condition.</p>
                     <p>2. Electronic & hardware parts carry manufacturer warranty only; physical/liquid damage voids coverage.</p>
-                    <p>3. This is an authenticated computer-generated invoice issued in accordance with GST statutory guidelines.</p>
+                    <p>3. This is an authenticated computer-generated invoice and requires no physical signature.</p>
                   </div>
                 </div>
               ) : (

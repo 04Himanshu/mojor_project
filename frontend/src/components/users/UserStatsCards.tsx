@@ -15,52 +15,40 @@ export const UserStatsCards: React.FC<Props> = ({ stats }) => {
       value: stats.total_users,
       subtitle: `${stats.active_users} of ${stats.total_users} active`,
       icon: <Users size={18} />,
-      accentColor: 'from-blue-500 to-indigo-500',
-      iconBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-      pill: {
-        text: 'Staff Roster',
-        style: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-        dot: 'bg-blue-500'
-      }
+      iconContainer: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+      pillClass: 'badge-info',
+      dotClass: 'bg-blue-500',
+      pillText: 'Staff Roster'
     },
     {
       title: 'Active Accounts',
       value: stats.active_users,
       subtitle: `${((stats.active_users / (stats.total_users || 1)) * 100).toFixed(0)}% enabled`,
       icon: <UserCheck size={18} />,
-      accentColor: 'from-emerald-500 to-teal-500',
-      iconBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-      pill: {
-        text: stats.active_users > 0 ? 'Operational' : 'No Access',
-        style: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-        dot: 'bg-emerald-500'
-      }
+      iconContainer: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+      pillClass: stats.active_users > 0 ? 'badge-success' : 'badge-neutral',
+      dotClass: stats.active_users > 0 ? 'bg-emerald-500' : 'bg-slate-400',
+      pillText: stats.active_users > 0 ? 'Operational' : 'No Access'
     },
     {
       title: 'Configured Roles',
       value: stats.total_roles,
-      subtitle: 'Permission Tiers',
+      subtitle: 'Access Levels',
       icon: <Shield size={18} />,
-      accentColor: 'from-purple-500 to-pink-500',
-      iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-      pill: {
-        text: 'Security Matrix',
-        style: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-        dot: 'bg-purple-500'
-      }
+      iconContainer: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+      pillClass: 'badge-purple',
+      dotClass: 'bg-purple-500',
+      pillText: 'Active Roles'
     },
     {
       title: 'Administrators',
       value: stats.admin_users,
-      subtitle: 'Full System Authority',
+      subtitle: 'System Administrators',
       icon: <KeyRound size={18} />,
-      accentColor: 'from-amber-500 to-orange-500',
-      iconBg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-      pill: {
-        text: 'Root Privileges',
-        style: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-        dot: 'bg-amber-500 animate-pulse'
-      }
+      iconContainer: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+      pillClass: 'badge-warning',
+      dotClass: 'bg-amber-500 animate-pulse',
+      pillText: 'Full Access'
     }
   ];
 
@@ -69,37 +57,31 @@ export const UserStatsCards: React.FC<Props> = ({ stats }) => {
       {cards.map((c) => (
         <div
           key={c.title}
-          className="card-base p-5 flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200"
+          className="card-base p-5 flex flex-col justify-between group hover:border-slate-300 dark:hover:border-slate-700/90 transition-all duration-150"
         >
-          {/* Subtle top accent gradient line */}
-          <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${c.accentColor}`} />
-
-          <div className="flex flex-col justify-between h-full space-y-3 pt-1">
-            {/* Header: Title & Icon */}
-            <div className="flex items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center justify-between gap-2 mb-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 select-none truncate">
                 {c.title}
               </span>
-              <div className={`p-2 rounded-xl border ${c.iconBg} shrink-0 flex items-center justify-center`}>
+              <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${c.iconContainer}`}>
                 {c.icon}
               </div>
             </div>
 
-            {/* Metric Value */}
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-mono tabular-nums">
               {c.value}
             </div>
+          </div>
 
-            {/* Footer: Subtitle on Left, Pill Badge on Right */}
-            <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-slate-800/80 gap-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate" title={c.subtitle}>
-                {c.subtitle}
-              </span>
-              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap shrink-0 ${c.pill.style}`}>
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.pill.dot}`} />
-                {c.pill.text}
-              </span>
-            </div>
+          <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/70 text-xs gap-2 min-w-0">
+            <span className="text-slate-500 dark:text-slate-400 font-medium truncate min-w-0" title={c.subtitle}>
+              {c.subtitle}
+            </span>
+            <span className={`${c.pillClass} text-[10px] py-0.5 px-2.5 whitespace-nowrap shrink-0`}>
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dotClass}`} />
+              <span className="whitespace-nowrap">{c.pillText}</span>
+            </span>
           </div>
         </div>
       ))}

@@ -70,7 +70,6 @@ const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardAnalytics | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
   // Interactive UI View Controls
   const [trendMetric, setTrendMetric] = useState<'revenue' | 'orders' | 'units'>('revenue');
@@ -87,7 +86,6 @@ const Dashboard: React.FC = () => {
     try {
       const stats = await inventoryApi.getDashboardStats();
       setData(stats);
-      setLastUpdated(new Date());
     } catch (err) {
       console.warn('Dashboard fetch error', err);
     } finally {
@@ -244,17 +242,9 @@ const Dashboard: React.FC = () => {
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                   Operations & Sales Intelligence
                 </h1>
-                <span className="badge-info text-[10px] py-0.5 px-2 font-mono uppercase font-bold">
-                  POS Enterprise
-                </span>
               </div>
-              <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 font-medium gap-2 mt-0.5">
+              <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 <span>Real-time Counter Sales, POS Transactions & Inventory Sync</span>
-                <span>·</span>
-                <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Live Sync ({lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })})
-                </span>
               </div>
             </div>
           </div>
@@ -293,13 +283,13 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/70 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-200/60 dark:border-slate-800/60 text-xs">
         <div className="flex items-center gap-2 px-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="text-slate-500 dark:text-slate-400">Register State:</span>
+          <span className="text-slate-500 dark:text-slate-400">Checkout Counter:</span>
           <span className="font-semibold text-slate-800 dark:text-slate-200">Online & Ready</span>
         </div>
         <div className="flex items-center gap-2 px-2 border-l border-slate-200/60 dark:border-slate-800/60">
           <span className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-slate-500 dark:text-slate-400">Inventory Guard:</span>
-          <span className="font-semibold text-slate-800 dark:text-slate-200">Zero-Negative Active</span>
+          <span className="text-slate-500 dark:text-slate-400">Stock Controls:</span>
+          <span className="font-semibold text-slate-800 dark:text-slate-200">Protected</span>
         </div>
         <div className="flex items-center gap-2 px-2 border-l border-slate-200/60 dark:border-slate-800/60">
           <span className="w-2 h-2 rounded-full bg-purple-500" />

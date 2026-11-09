@@ -457,7 +457,7 @@ export const CreateOrderModal: React.FC<Props> = ({
                   Purchased Items Cart ({itemRows.filter((r) => r.inventory_id > 0).length})
                   {inventoryList.length > 0 && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono">
-                      {inventoryList.length} products loaded from DB
+                      {inventoryList.length} items available
                     </span>
                   )}
                 </span>
@@ -470,11 +470,11 @@ export const CreateOrderModal: React.FC<Props> = ({
                   type="button"
                   onClick={loadInventoryItems}
                   disabled={loadingItems}
-                  title="Reload items live from database"
+                  title="Refresh product list"
                   className="btn-secondary px-2.5 py-1.5 text-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <RefreshCw size={13} className={loadingItems ? 'animate-spin text-blue-500' : ''} />
-                  <span>{loadingItems ? 'Syncing DB...' : 'Sync DB'}</span>
+                  <span>{loadingItems ? 'Syncing...' : 'Refresh'}</span>
                 </button>
                 <button
                   type="button"
@@ -513,10 +513,10 @@ export const CreateOrderModal: React.FC<Props> = ({
                       >
                         <option value={0}>
                           {loadingItems 
-                            ? '-- Loading items from database... --' 
+                            ? '-- Loading catalog items... --' 
                             : inventoryList.length === 0 
-                            ? '-- No active products found in DB --' 
-                            : `-- Search / Select Product (${inventoryList.length} items from DB) --`}
+                            ? '-- No active products found --' 
+                            : `-- Search / Select Product (${inventoryList.length} items available) --`}
                         </option>
                         {inventoryList.map((inv) => (
                           <option key={inv.id} value={inv.id}>

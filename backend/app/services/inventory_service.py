@@ -201,12 +201,12 @@ def create_item(db: Session, data: InventoryCreate, user_name: str = "Admin User
         db.refresh(new_item)
         return serialize_item(new_item)
 
-    except IntegrityError as ie:
+    except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail=f"Database integrity constraint violated: {str(ie)}")
-    except Exception as exc:
+        raise HTTPException(status_code=400, detail="An item with this SKU already exists in inventory.")
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Transaction failed while creating item: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Failed to create inventory item. Please try again.")
 
 def update_item(db: Session, item_id: int, data: InventoryUpdate, user_name: str = "Admin User"):
     # Rule 5: Concurrency locking
@@ -247,9 +247,9 @@ def update_item(db: Session, item_id: int, data: InventoryUpdate, user_name: str
     except HTTPException:
         db.rollback()
         raise
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to update item: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Failed to update inventory item. Please try again.")
 
 def delete_item(db: Session, item_id: int):
     # Rule 7: Preserve audit trail instead of silently destroying stock history
@@ -284,9 +284,9 @@ def delete_item(db: Session, item_id: int):
             db.delete(item)
             db.commit()
             return {"message": f"Item '{item.name}' ({item.sku}) deleted successfully."}
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Transaction failed during item deletion: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Failed to delete inventory item. Please try again.")
 
 def stock_in(db: Session, item_id: int, req: StockInRequest, user_name: str = "Admin User"):
     # Rule 8: Validation
@@ -328,9 +328,9 @@ def stock_in(db: Session, item_id: int, req: StockInRequest, user_name: str = "A
             "item": serialize_item(item),
             "movement": serialize_movement(movement)
         }
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Stock In transaction failed: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Stock In transaction failed. Please try again.")
 
 def stock_out(db: Session, item_id: int, req: StockOutRequest, user_name: str = "Admin User"):
     # Rule 8: Validation
@@ -379,9 +379,9 @@ def stock_out(db: Session, item_id: int, req: StockOutRequest, user_name: str = 
             "item": serialize_item(item),
             "movement": serialize_movement(movement)
         }
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Stock Out transaction failed: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Stock Out transaction failed. Please try again.")
 
 def stock_adjustment(db: Session, item_id: int, req: StockAdjustmentRequest, user_name: str = "Admin User"):
     # Rule 2: Stock validation
@@ -423,9 +423,9 @@ def stock_adjustment(db: Session, item_id: int, req: StockAdjustmentRequest, use
             "item": serialize_item(item),
             "movement": serialize_movement(movement)
         }
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Adjustment transaction failed: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Stock adjustment transaction failed. Please try again.")
 
 def get_item_movements(db: Session, item_id: int):
     item = db.query(Inventory).filter(Inventory.id == item_id).first()

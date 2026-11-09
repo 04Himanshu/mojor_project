@@ -177,10 +177,10 @@ class CashfreeService:
                     pass
                 db.rollback()
                 if "authentication" in err_msg.lower():
-                    err_msg = f"{err_msg}. Please ensure uvicorn backend server is restarted so the latest CASHFREE_APP_ID & CASHFREE_SECRET_KEY in .env are active."
+                    err_msg = "Payment gateway authentication failed. Please verify merchant credentials."
                 raise HTTPException(
                     status_code=status.HTTP_502_BAD_GATEWAY,
-                    detail=f"Cashfree Gateway Error: {err_msg}"
+                    detail=f"Payment Gateway Notice: {err_msg}"
                 )
 
             cf_data = response.json()
@@ -215,11 +215,11 @@ class CashfreeService:
 
         except HTTPException:
             raise
-        except Exception as exc:
+        except Exception:
             db.rollback()
             raise HTTPException(
                 status_code=500,
-                detail=f"Failed to initiate Cashfree payment session: {str(exc)}"
+                detail="Unable to initiate online payment session. Please try again."
             )
 
     @staticmethod

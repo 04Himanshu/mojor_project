@@ -84,8 +84,8 @@ export const WalkInOrder: React.FC = () => {
       const active = (items || []).filter((i) => i.is_active);
       setInventoryList(active);
     } catch (err) {
-      console.error('Failed to load store inventory from DB', err);
-      toast.error('Failed to sync inventory from database. Check backend connection.', 'DB Sync Error');
+      console.error('Failed to load store inventory', err);
+      toast.error('Failed to sync inventory. Please check connection.', 'Sync Error');
     } finally {
       setLoadingItems(false);
     }
@@ -328,7 +328,7 @@ export const WalkInOrder: React.FC = () => {
       };
 
       const newOrder = await orderApi.createOrder(payload);
-      toast.success(`Walk-in order ${newOrder.order_number} processed! Stock deducted from DB.`, 'Sale Completed');
+      toast.success(`Walk-in order ${newOrder.order_number} completed successfully! Stock updated.`, 'Sale Completed');
 
       // Auto-open invoice/receipt and close payment modal
       setCompletedOrder(newOrder);
@@ -374,11 +374,11 @@ export const WalkInOrder: React.FC = () => {
             type="button"
             onClick={loadInventory}
             disabled={loadingItems}
-            title="Sync inventory records live from database"
+            title="Refresh store inventory catalog"
             className="btn-secondary text-xs py-1.5 px-3 cursor-pointer"
           >
             <RefreshCw size={13} className={loadingItems ? 'animate-spin text-blue-500' : ''} />
-            <span>{loadingItems ? 'Syncing...' : 'Sync DB'}</span>
+            <span>{loadingItems ? 'Syncing...' : 'Refresh'}</span>
           </button>
 
           <Link
@@ -503,7 +503,7 @@ export const WalkInOrder: React.FC = () => {
           {loadingItems ? (
             <div className="card-base p-16 text-center text-slate-400">
               <span className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin inline-block mb-2" />
-              <p className="text-xs">Loading store catalog dynamically from DB...</p>
+              <p className="text-xs">Loading store catalog...</p>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="card-base p-12 text-center text-slate-400">

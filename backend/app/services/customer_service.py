@@ -10,24 +10,28 @@ def get_customers(db: Session) -> List[Customer]:
 def get_customer_by_id(db: Session, customer_id: int) -> Customer:
     customer = db.query(Customer).filter(Customer.id == customer_id).first()
     if not customer:
-        raise HTTPException(status_code=404, detail=f"Customer #{customer_id} not found.")
+        raise HTTPException(status_code=404, detail="Customer not found.")
     return customer
 
 def create_customer(db: Session, payload: CustomerCreate) -> Customer:
     existing = db.query(Customer).filter(Customer.email == payload.email.strip().lower()).first()
     if existing:
-        raise HTTPException(status_code=400, detail=f"Customer with email '{payload.email}' already exists.")
+        raise HTTPException(status_code=400, detail="A customer with this email address already exists.")
     
-    new_customer = Customer(
-        name=payload.name.strip(),
-        email=payload.email.strip().lower(),
-        phone=payload.phone.strip(),
-        address=payload.address.strip() if payload.address else None
-    )
-    db.add(new_customer)
-    db.commit()
-    db.refresh(new_customer)
-    return new_customer
+    try:
+        new_customer = Customer(
+            name=payload.name.strip(),
+            email=payload.email.strip().lower(),
+            phone=payload.phone.strip(),
+            address=payload.address.strip() if payload.address else None
+        )
+        db.add(new_customer)
+        db.commit()
+        db.refresh(new_customer)
+        return new_customer
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Unable to create customer profile. Please check the entered information.")
 
 def seed_default_customers_if_empty(db: Session):
     if db.query(Customer).count() > 0:

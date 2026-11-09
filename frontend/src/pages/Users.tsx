@@ -163,9 +163,6 @@ export const UsersPage: React.FC = () => {
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Staff & Access Control
             </h1>
-            <span className="badge-info text-[10px]">
-              Access Control
-            </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Manage staff accounts, department assignments, and configure granular role-based security privileges

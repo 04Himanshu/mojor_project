@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+import logging
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.config import settings
@@ -51,10 +53,20 @@ app.include_router(payments.router, prefix="/api/v1/payments", tags=["Payments"]
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(procurement.router, prefix="/api/v1/procurement", tags=["Procurement & Vendors"])
 
+logger = logging.getLogger("uvicorn.error")
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Internal error processing {request.method} {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "A system error occurred. Please try again or contact support."}
+    )
+
 @app.get("/")
 def read_root():
     return {
-        "message": "Welcome to Enterprise Operations Manager API",
-        "docs": "/docs",
+        "message": "Enterprise Operations Manager API",
+        "status": "healthy",
         "version": "1.0.0"
     }
